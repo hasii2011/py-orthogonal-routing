@@ -1,0 +1,13 @@
+.idea/
+__pycache__/
+.DS_Store
+/html/
+build/
+dist/
+/pyenv-3.11.7/
+/site/
+/docs/
+/.mypy_cache
+.envrc
+.python-version
+src/pyorthgonalrouting.egg-info/
