@@ -16,6 +16,9 @@ class Point:
     x: int = NOT_SET_INT
     y: int = NOT_SET_INT
 
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
+
 
 Points = NewType('Points', List[Point])
 

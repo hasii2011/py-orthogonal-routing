@@ -54,6 +54,15 @@ class TestDictionaryOfDictionary(UnitTestBase):
 
         self.logger.debug(f'{index=}')
 
+    def testAppendListToList(self):
+
+        list1 = [1, 2, 3, 4]
+        list2 = [5, 6, 7, 8]
+
+        list1 = list1 + list2
+
+        self.logger.info(f'{list1}')
+
 
 def suite() -> TestSuite:
     import unittest

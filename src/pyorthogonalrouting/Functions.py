@@ -1,10 +1,14 @@
 
 from math import sqrt
+from typing import Dict
+from typing import cast
 
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.Point import Point
+from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.PointNode import Distance
 from pyorthogonalrouting.Rectangle import Rectangle
+from pyorthogonalrouting.Rectangle import Rectangles
 from pyorthogonalrouting.enumerations.Side import Side
 
 
@@ -62,3 +66,17 @@ def computePt(p: ConnectorPoint) -> Point:
             return makePt(b.right, b.top + b.height * p.distance)
         case _:
             assert False, f'Unknown side {p.side}'
+
+
+def reducePoints(points: Points) -> Points:
+    """
+
+    Args:
+        points:
+
+    Returns: Returns a list without repeated points
+    """
+
+    result: Points = Points(list(dict.fromkeys(points)))
+
+    return result

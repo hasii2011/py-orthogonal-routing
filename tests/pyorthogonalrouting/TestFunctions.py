@@ -1,4 +1,8 @@
+from collections import Counter
+from typing import Any
+from typing import List
 from typing import Tuple
+
 from unittest import TestSuite
 from unittest import main as unitTestMain
 
@@ -6,14 +10,15 @@ from codeallybasic.UnitTestBase import UnitTestBase
 
 from pyorthogonalrouting.Common import Integers
 from pyorthogonalrouting.Common import integerListFactory
+
 from pyorthogonalrouting.Functions import distance
 from pyorthogonalrouting.Functions import isVerticalSide
+from pyorthogonalrouting.Functions import reducePoints
+
 from pyorthogonalrouting.Point import Point
+from pyorthogonalrouting.Point import Points
+
 from pyorthogonalrouting.enumerations.Side import Side
-
-
-# import the class you want to test here
-# from org.pyut.template import template
 
 
 class TestFunctions(UnitTestBase):
@@ -32,6 +37,18 @@ class TestFunctions(UnitTestBase):
 
     def tearDown(self):
         super().tearDown()
+
+    def testReducePoints(self):
+        duplicatePoints: Points = Points(
+            [
+                Point(555, 555), Point(100, 100), Point(22, 22),
+                Point(111, 111), Point(220, 220), Point(22, 22),
+                Point(111, 111), Point(666, 666), Point(555, 555),
+            ]
+        )
+        reducedPoints: Points = reducePoints(points=duplicatePoints)
+        self.logger.info(f'{reducedPoints=}')
+        self.assertFalse(self._hasDuplicates(reducedPoints), 'Wowza, there should be no duplicates')
 
     def testDistance(self):
 
@@ -106,6 +123,17 @@ class TestFunctions(UnitTestBase):
         self.logger.debug(f'{verticals=} {horizontals=}')
 
         return verticals, horizontals
+
+    def _hasDuplicates(self, genericList: List[Any]) -> bool:
+        """
+
+        Args:
+            genericList:
+
+        Returns: `True` if the list has duplicates, else `False`
+        """
+
+        return any(value > 1 for value in Counter(genericList).values())
 
 
 def suite() -> TestSuite:

@@ -7,6 +7,7 @@ from logging import Logger
 from logging import getLogger
 
 from pyorthogonalrouting.Point import Point
+from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.Size import Size
 
@@ -35,6 +36,34 @@ class Rectangle:
     @classmethod
     def fromLTRB(cls, left: int, top: int, right: int, bottom: int) -> 'Rectangle':
         return Rectangle(left=left, top=top, width=right-left, height=bottom-top)
+
+    @classmethod
+    def getNotColliding(cls, points: Points, rectangles: 'Rectangles') -> Points:
+
+        notColliding = [pt for pt in points if Rectangle.obstacleCollision(pt, rectangles) is False]
+
+        return Points(notColliding)
+
+    @classmethod
+    def obstacleCollision(cls, point: Point, rectangles: 'Rectangles') -> bool:
+        """
+        Determine if the point is in any of the rectangles
+
+        Args:
+            point:
+            rectangles:
+
+        Returns:  'True' if the point in one of the rectangles, otherwise 'False'
+        """
+        ans: bool = False
+
+        for r in rectangles:
+            rectangle: Rectangle = cast(Rectangle, r)
+            if rectangle.contains(p=point):
+                ans = True
+                break
+
+        return ans
 
     @property
     def left(self) -> int:

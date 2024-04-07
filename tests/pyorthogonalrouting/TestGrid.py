@@ -5,16 +5,14 @@ from unittest import main as unitTestMain
 from codeallybasic.UnitTestBase import UnitTestBase
 
 from pyorthogonalrouting.Common import Integers
+from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.Grid import ColumnNumber
 from pyorthogonalrouting.Grid import Grid
 from pyorthogonalrouting.Grid import RowNumber
 from pyorthogonalrouting.LeftTopRightBottom import LeftTopRightBottom
+from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.Rectangle import Rectangle
 from pyorthogonalrouting.Rectangle import Rectangles
-
-
-# import the class you want to test here
-# from org.pyut.template import template
 
 
 class TestGrid(UnitTestBase):
@@ -84,12 +82,7 @@ class TestGrid(UnitTestBase):
 
     def testRulersToGrid(self):
 
-        bigBounds:   LeftTopRightBottom = LeftTopRightBottom(left=0, top=0, right=1000, bottom=1000)
-        bounds:      Rectangle          = Rectangle.fromLTRB(bigBounds.left, bigBounds.top, bigBounds.right, bigBounds.bottom)
-        verticals:   Integers           = Integers([10, 20, 30, 40])
-        horizontals: Integers           = Integers([10, 20, 30, 40])
-
-        grid: Grid = Grid.rulersToGrid(verticals, horizontals, bounds)
+        grid: Grid = self._buildTesGrid()
 
         self.assertEqual(5, grid.rows, 'Incorrect row count')
         self.assertEqual(5, grid.columns, 'Incorrect column count')
@@ -97,22 +90,49 @@ class TestGrid(UnitTestBase):
         # Check random cells
         #
         expected:  Rectangle = Rectangle(left=30, top=10, width=10, height=10)
-        rectangle: Rectangle = grid._gridMap[1][3]
+        rectangle: Rectangle = grid._gridMap[RowNumber(1)][ColumnNumber(3)]
 
         self.assertEqual(expected, rectangle, 'Did someone change the algorithm')
 
         expected  = Rectangle(left=40, top=40, width=960, height=960)
-        rectangle = grid._gridMap[4][4]
+        rectangle = grid._gridMap[RowNumber(4)][ColumnNumber(4)]
 
         self.assertEqual(expected, rectangle, 'Did someone change the algorithm')
 
         expected  = Rectangle(left=30, top=0, width=10, height=10)
-        rectangle = grid._gridMap[0][3]
+        rectangle = grid._gridMap[RowNumber(0)][ColumnNumber(3)]
 
         self.assertEqual(expected, rectangle, 'Did someone change the algorithm')
 
     def testGridToSpots(self):
-        pass
+
+        grid: Grid = self._buildTesGrid()
+
+        pointA: ConnectorPoint = ConnectorPoint(shape=Rect(left=50,  top=50,  width=100, height=100))
+        pointB: ConnectorPoint = ConnectorPoint(shape=Rect(left=200, top=200, width=50,  height=100))
+
+        shapeA = Rectangle.fromRect(pointA.shape)
+        shapeB = Rectangle.fromRect(pointB.shape)
+
+        shapeMargin: int = 10
+
+        inflatedA: Rectangle = shapeA.inflate(shapeMargin, shapeMargin)
+        inflatedB: Rectangle = shapeB.inflate(shapeMargin, shapeMargin)
+
+        gridPoints = Grid.gridToSpots(grid, Rectangles([inflatedA, inflatedB]))
+
+        self.logger.info(f'{gridPoints=}')
+
+    def _buildTesGrid(self) -> Grid:
+
+        bigBounds:   LeftTopRightBottom = LeftTopRightBottom(left=0, top=0, right=1000, bottom=1000)
+        bounds:      Rectangle          = Rectangle.fromLTRB(bigBounds.left, bigBounds.top, bigBounds.right, bigBounds.bottom)
+        verticals:   Integers           = Integers([10, 20, 30, 40])
+        horizontals: Integers           = Integers([10, 20, 30, 40])
+
+        grid: Grid = Grid.rulersToGrid(verticals, horizontals, bounds)
+
+        return grid
 
 
 def suite() -> TestSuite:

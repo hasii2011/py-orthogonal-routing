@@ -12,7 +12,6 @@ from pyorthogonalrouting.Functions import makePt
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
-from pyorthogonalrouting.LeftTopRightBottom import LeftTopRightBottom
 
 from pyorthogonalrouting.Grid import Grid
 from pyorthogonalrouting.Point import Point
@@ -20,6 +19,7 @@ from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Point import pointsFactory
 
 from pyorthogonalrouting.Rectangle import Rectangle
+from pyorthogonalrouting.Rectangle import Rectangles
 from pyorthogonalrouting.enumerations.Side import Side
 
 
@@ -118,5 +118,6 @@ class OrthogonalConnector:
         horizontals.sort()
 
         # Create grid
-        grid: Grid = Grid.rulersToGrid(verticals=verticals, horizontals=horizontals, bounds=bounds)
+        grid:       Grid   = Grid.rulersToGrid(verticals=verticals, horizontals=horizontals, bounds=bounds)
+        gridPoints: Points = Grid.gridToSpots(grid=grid, obstacles=Rectangles([inflatedA, inflatedB]))
 

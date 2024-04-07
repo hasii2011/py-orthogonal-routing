@@ -7,6 +7,7 @@ from logging import Logger
 from logging import getLogger
 
 from pyorthogonalrouting.Common import Integers
+from pyorthogonalrouting.Functions import reducePoints
 from pyorthogonalrouting.Point import Points
 
 from pyorthogonalrouting.Rectangle import NO_RECTANGLE
@@ -87,16 +88,41 @@ class Grid:
         return grid
 
     @classmethod
-    def gridToSpots(cls, grid: 'Grid', obstacles: Rectangles):
-
-        # obstacleCollision = (p: Point) = > obstacles.filter(o= > o.contains(p)).length > 0;
+    def gridToSpots(cls, grid: 'Grid', obstacles: Rectangles) -> Points:
 
         gridPoints: Points = Points([])
 
         for row, data in grid._gridMap.items():
-            firstRow: int = row == 0
-            lastRow:  int = row == grid.rows -1
+            firstRow: bool = row == 0
+            lastRow:  bool = row == grid.rows - 1
+            for col, r in data.items():
+                firstCol: bool = col == 0
+                lastCol:  bool = col == grid.columns - 1
 
+                nw = firstCol and firstRow
+                ne = firstRow and lastCol
+                se = lastRow and lastCol
+                sw = lastRow and firstCol
+                if nw or ne or se or sw:
+                    gridPoints = Points(gridPoints + Points([r.northWest, r.northEast, r.southWest, r.southEast]))
+                elif firstRow is True:
+                    gridPoints = Points(gridPoints + Points([r.northWest, r.north, r.northEast]))
+                elif lastRow is True:
+                    gridPoints = Points(gridPoints + Points([r.southEast, r.south, r.southWest]))
+                elif firstCol is True:
+                    gridPoints = Points(gridPoints + Points([r.northWest, r.west, r.southWest]))
+                elif lastCol is True:
+                    gridPoints = Points(gridPoints + Points([r.northEast, r.east, r.southEast]))
+                else:
+                    gridPoints = Points(gridPoints + Points([r.northWest, r.north, r.northEast, r.east, r.southEast, r.south, r.southWest, r.west, r.center]))
+
+            # obstacleCollision = (p: Point) = > obstacles.filter(o= > o.contains(p)).length > 0;
+            # filter out points that do not touch shapes
+            noCollisions: Points = Rectangle.getNotColliding(points=gridPoints, rectangles=obstacles)
+            noDuplicates: Points = reducePoints(noCollisions)
+            return noDuplicates
+
+        return gridPoints
 
     @property
     def rows(self) -> int:
