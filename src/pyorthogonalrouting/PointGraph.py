@@ -86,18 +86,18 @@ class PointGraph:
                 hotYs.append(y)
             graph.add(p=p)
 
+        # graph._debugIndex()
         hotXs.sort()
         hotYs.sort()
 
-        def inHotIndex(p: Point) -> bool:
-            return graph.has(p)
+        def inHotIndex(pt: Point) -> bool:
+            return graph.has(pt)
 
         # TODO:
         # Yeah, yeah, I know the following code is not "Pythonic";  I am doing
         # a blind TypeScript port;  Once I getting converted and appropriately
         # unit test it I can rewrite it;
         #
-        i: int = 0
         for i in range(len(hotYs)):
             for j in range(len(hotXs)):
                 b: Point = Point(x=hotXs[j], y=hotYs[i])
@@ -117,6 +117,9 @@ class PointGraph:
                         graph.connect(b, a)
                         connections.append(Line(a=a, b=b))
 
+        # graph._debugIndex()
+        # graph.logger.info(f'{connections}')
+
         return GraphAndConnections(graph=graph, connections=connections)
 
     @classmethod
@@ -132,7 +135,7 @@ class PointGraph:
         Returns:
         """
 
-        originNode: PointNode = graph.get(origin)
+        originNode:      PointNode = graph.get(origin)
         destinationNode: PointNode = graph.get(destination)
 
         if originNode is None:
@@ -143,7 +146,7 @@ class PointGraph:
         graph.calculateShortestPathFromSource(graph=graph, source=originNode)
 
         pointNodes: PointNodes = destinationNode.shortestPath
-        points: Points = Points([pointNode.data for pointNode in pointNodes])
+        points:     Points = Points([pointNode.data for pointNode in pointNodes])
 
         return points
 
@@ -204,6 +207,7 @@ class PointGraph:
         unSettledNodes: PointNodeSet = set()
 
         unSettledNodes.add(source)
+
         while len(unSettledNodes) != 0:
             currentNode: PointNode = self._getLowestDistanceNode(unSettledNodes)
             unSettledNodes.remove(currentNode)
@@ -290,3 +294,24 @@ class PointGraph:
         ys: YStr = YStr(str(p.y))
 
         return xs, ys
+
+    def _debugIndex(self):
+
+        lc: str = '{'   # left curly
+        rc: str = '}'   # right curly
+
+        index: XToYDict = self._index
+
+        prettyIndex: str = f'index: {lc}'
+        for xKey in index.keys():
+            ytoPointNode: YToPointNodeDict = index[xKey]
+            prettyIndex = f'{prettyIndex}\n\t{xKey}: {lc}'
+
+            for yKey in ytoPointNode.keys():
+                pointNode: PointNode = ytoPointNode[yKey]
+                prettyIndex = f'{prettyIndex}\n\t\t{yKey:>4}: {pointNode}'
+
+            prettyIndex = f'{prettyIndex}\n\t{rc},'
+
+        prettyIndex = f'{prettyIndex}\n{rc}'
+        self.logger.info(f'{prettyIndex}')

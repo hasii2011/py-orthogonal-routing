@@ -58,13 +58,13 @@ def computePt(p: ConnectorPoint) -> Point:
 
     match p.side:
         case Side.BOTTOM:
-            return makePt(b.left + b.width * p.distance, b.bottom)
+            return makePt(b.left + round (b.width * p.distance), b.bottom)
         case Side.TOP:
-            return makePt(b.left + b.width * p.distance, b.top)
+            return makePt(b.left + round(b.width * p.distance), b.top)
         case Side.LEFT:
-            return makePt(b.left, b.top + b.height * p.distance)
+            return makePt(b.left, b.top + round(b.height * p.distance))
         case Side.RIGHT:
-            return makePt(b.right, b.top + b.height * p.distance)
+            return makePt(b.right, b.top + round(b.height * p.distance))
         case _:
             assert False, f'Unknown side {p.side}'
 

@@ -78,8 +78,8 @@ class OrthogonalConnector:
         bounds: Rectangle = Rectangle.fromLTRB(
             left=max(inflatedBounds.left, bigBounds.left),
             top=max(inflatedBounds.top, bigBounds.top),
-            right=max(inflatedBounds.right, bigBounds.right),
-            bottom=max(inflatedBounds.bottom, bigBounds.bottom)
+            right=min(inflatedBounds.right, bigBounds.right),
+            bottom=min(inflatedBounds.bottom, bigBounds.bottom)
         )
 
         # Add edges to rulers

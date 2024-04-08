@@ -172,6 +172,12 @@ class TestFunctions(UnitTestBase):
         self.assertIn(3, verticals)
         self.assertIn(2, horizontals)
 
+    def testTSForEmulation(self):
+        integers: Integers = Integers([100, 200, 300])
+
+        for i in range(len(integers)):
+            self.logger.info(f'integers[{i}]={integers[i]}')
+
     def _runAppendComputation(self, sideAVertical: bool, sideBVertical: bool) -> Tuple[Integers, Integers]:
 
         verticals:   Integers = integerListFactory()

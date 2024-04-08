@@ -59,11 +59,10 @@ class Grid:
                 grid.set(row=RowNumber(row), column=ColumnNumber(column), rectangle=rectangle)
                 column += 1
                 lastX = x
-            #
-            # last cell of the row
-            rectangle = Rectangle.fromLTRB(lastX, lastY, bounds.right, y)
-            grid.set(row=RowNumber(row), column=ColumnNumber(column), rectangle=rectangle)
 
+            # last cell of the row
+
+            grid.set(row=RowNumber(row), column=ColumnNumber(column), rectangle=Rectangle.fromLTRB(lastX, lastY, bounds.right, y))
             lastX  = bounds.left
             lastY  = y
             column = 0

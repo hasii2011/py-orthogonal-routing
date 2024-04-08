@@ -139,8 +139,8 @@ class Rectangle:
 
     def inflate(self, horizontal: int, vertical: int) -> 'Rectangle':
 
-        return Rectangle.fromLTRB(left=self._left + horizontal,
-                                  top=self._top + vertical,
+        return Rectangle.fromLTRB(left=self._left - horizontal,
+                                  top=self._top - vertical,
                                   right=self.right + horizontal,
                                   bottom=self.bottom + vertical)
 

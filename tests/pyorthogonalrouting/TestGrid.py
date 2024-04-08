@@ -5,11 +5,13 @@ from unittest import main as unitTestMain
 from codeallybasic.UnitTestBase import UnitTestBase
 
 from pyorthogonalrouting.Common import Integers
+
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
+
 from pyorthogonalrouting.Grid import ColumnNumber
 from pyorthogonalrouting.Grid import Grid
 from pyorthogonalrouting.Grid import RowNumber
-from pyorthogonalrouting.LeftTopRightBottom import LeftTopRightBottom
+
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.Rectangle import Rectangle
 from pyorthogonalrouting.Rectangle import Rectangles
@@ -84,22 +86,22 @@ class TestGrid(UnitTestBase):
 
         grid: Grid = self._buildTesGrid()
 
-        self.assertEqual(5, grid.rows, 'Incorrect row count')
-        self.assertEqual(5, grid.columns, 'Incorrect column count')
+        self.assertEqual(6, grid.rows, 'Incorrect row count')
+        self.assertEqual(6, grid.columns, 'Incorrect column count')
         #
         # Check random cells
         #
-        expected:  Rectangle = Rectangle(left=30, top=10, width=10, height=10)
+        expected:  Rectangle = Rectangle(left=160, top=40, width=30, height=120)
         rectangle: Rectangle = grid._gridMap[RowNumber(1)][ColumnNumber(3)]
 
         self.assertEqual(expected, rectangle, 'Did someone change the algorithm')
 
-        expected  = Rectangle(left=40, top=40, width=960, height=960)
+        expected  = Rectangle(left=190, top=250, width=70, height=60)
         rectangle = grid._gridMap[RowNumber(4)][ColumnNumber(4)]
 
         self.assertEqual(expected, rectangle, 'Did someone change the algorithm')
 
-        expected  = Rectangle(left=30, top=0, width=10, height=10)
+        expected  = Rectangle(left=160, top=30, width=30, height=10)
         rectangle = grid._gridMap[RowNumber(0)][ColumnNumber(3)]
 
         self.assertEqual(expected, rectangle, 'Did someone change the algorithm')
@@ -125,10 +127,10 @@ class TestGrid(UnitTestBase):
 
     def _buildTesGrid(self) -> Grid:
 
-        bigBounds:   LeftTopRightBottom = LeftTopRightBottom(left=0, top=0, right=1000, bottom=1000)
-        bounds:      Rectangle          = Rectangle.fromLTRB(bigBounds.left, bigBounds.top, bigBounds.right, bigBounds.bottom)
-        verticals:   Integers           = Integers([10, 20, 30, 40])
-        horizontals: Integers           = Integers([10, 20, 30, 40])
+        bigBounds:   Rectangle = Rectangle(left=30, top=30, width=240, height=290)
+        bounds:      Rectangle = Rectangle.fromLTRB(bigBounds.left, bigBounds.top, bigBounds.right, bigBounds.bottom)
+        verticals:   Integers  = Integers([40, 100, 160, 190, 260])
+        horizontals: Integers  = Integers([40, 160, 190, 250, 310])
 
         grid: Grid = Grid.rulersToGrid(verticals, horizontals, bounds)
 

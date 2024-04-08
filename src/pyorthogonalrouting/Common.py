@@ -14,8 +14,9 @@ HEIGHT_SENTINEL: int = -777
 
 NOT_SET_SENTINEL: int = 0xDEADBEEF
 
-NOT_SET_BOOLEAN: bool = cast(bool, None)
-NOT_SET_INT:     int  = cast(int, None)
+NOT_SET_BOOLEAN: bool  = cast(bool, None)
+NOT_SET_INT:     int   = cast(int, None)
+NOT_SET_FLOAT:   float = cast(float, None)
 
 NO_STRING:       str  = cast(str, None)
 

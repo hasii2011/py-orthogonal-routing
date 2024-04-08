@@ -27,12 +27,23 @@ class TestRectangle(UnitTestBase):
     def tearDown(self):
         super().tearDown()
 
+    def testInflate(self):
+        shapeA:    Rectangle = Rectangle(left=50, top=50, width=100, height=100)
+        inflatedA: Rectangle = shapeA.inflate(horizontal=10, vertical=10)
+
+        expectedLizzoA:    Rectangle = Rectangle(left=40, top=40, width=120, height=120)
+
+        self.assertEqual(expectedLizzoA, inflatedA, 'Hmm, fatty must have lost some weight')
+
     def testLTRB(self):
 
         rectangle1: Rectangle = Rectangle.fromLTRB(10, 20, 50, 50)
         rectangle2: Rectangle = Rectangle.fromLTRB(40, 40, 100, 50)
         rectangle3: Rectangle = Rectangle.fromLTRB(100, 60, 150, 75)
 
+        expectedRectangle1: Rectangle = Rectangle(left=10, top=20, width=40, height=30)
+
+        self.assertEqual(expectedRectangle1, rectangle1, 'My expectations are unmet')
         self.logger.debug(f'{rectangle1=} {rectangle2=} {rectangle3=}')
 
     def testGetNotColliding(self):
