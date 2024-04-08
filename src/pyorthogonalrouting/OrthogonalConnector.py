@@ -6,10 +6,14 @@ from pyorthogonalrouting.Common import Integers
 from pyorthogonalrouting.Common import integerListFactory
 
 from pyorthogonalrouting.Functions import computePt
+from pyorthogonalrouting.Functions import extrudeConnectorPoint
 from pyorthogonalrouting.Functions import isVerticalSide
 from pyorthogonalrouting.Functions import makePt
 
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
+from pyorthogonalrouting.Functions import simplifyPaths
+from pyorthogonalrouting.Line import Lines
+from pyorthogonalrouting.OrthogonalConnectorByProduct import OrthogonalConnectorByProduct
 
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
 
@@ -17,6 +21,8 @@ from pyorthogonalrouting.Grid import Grid
 from pyorthogonalrouting.Point import Point
 from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Point import pointsFactory
+from pyorthogonalrouting.PointGraph import GraphAndConnections
+from pyorthogonalrouting.PointGraph import PointGraph
 
 from pyorthogonalrouting.Rectangle import Rectangle
 from pyorthogonalrouting.Rectangle import Rectangles
@@ -24,6 +30,9 @@ from pyorthogonalrouting.enumerations.Side import Side
 
 
 class OrthogonalConnector:
+
+    byProduct: OrthogonalConnectorByProduct = OrthogonalConnectorByProduct()
+
     def __init__(self):
         self.logger: Logger = getLogger(__name__)
 
@@ -95,8 +104,8 @@ class OrthogonalConnector:
             horizontals.append(originB.y)
 
         # const add = (dx: number, dy: number) => spots.push(makePt(p.x + dx, p.y + dy));
-        def add(p: Point, dx: int, dy: int):
-            spots.append(makePt(p.x + dx, p.y + dy))
+        def add(pt: Point, dx: int, dy: int):
+            spots.append(makePt(pt.x + dx, pt.y + dy))
 
         # Points of shape antennas
         for connectorPt in [pointA, pointB]:
@@ -121,3 +130,32 @@ class OrthogonalConnector:
         grid:       Grid   = Grid.rulersToGrid(verticals=verticals, horizontals=horizontals, bounds=bounds)
         gridPoints: Points = Grid.gridToSpots(grid=grid, obstacles=Rectangles([inflatedA, inflatedB]))
 
+        # Add to spots
+        spots = Points(spots + gridPoints)
+
+        # Create graph
+        graphAndConnections: GraphAndConnections = PointGraph.createGraph(spots)
+        graph:       PointGraph = graphAndConnections.graph
+        connections: Lines      = graphAndConnections.connections
+
+        # Origin and destination by extruding antennas
+        origin:      Point = extrudeConnectorPoint(pointA, shapeMargin)
+        destination: Point = extrudeConnectorPoint(pointB, shapeMargin)
+
+        start: Point = computePt(pointA)
+        end:   Point = computePt(pointB)
+
+        OrthogonalConnector.byProduct.spots       = spots
+        OrthogonalConnector.byProduct.vRulers     = verticals
+        OrthogonalConnector.byProduct.hRulers     = horizontals
+        OrthogonalConnector.byProduct.grid        = grid.rectangles
+        OrthogonalConnector.byProduct.connections = connections
+
+        path: Points = PointGraph.shortestPath(graph, origin, destination)
+
+        if len(path) > 0:
+            # No need to re-compute the path
+            pathToSimplify: Points = Points(Points([start]) + path + Points([end]))
+            return simplifyPaths(points=pathToSimplify)
+        else:
+            return Points([])

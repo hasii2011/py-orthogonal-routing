@@ -10,10 +10,18 @@ from logging import getLogger
 
 from copy import deepcopy
 
+from dataclasses import dataclass
+from dataclasses import field
 from pyorthogonalrouting.Common import INT_MAX
+from pyorthogonalrouting.Common import Integers
+from pyorthogonalrouting.Line import Line
+from pyorthogonalrouting.Line import Lines
 from pyorthogonalrouting.Functions import distance
+from pyorthogonalrouting.Line import linesFactory
 
 from pyorthogonalrouting.Point import Point
+from pyorthogonalrouting.Point import Points
+
 from pyorthogonalrouting.PointNode import NO_POINT_NODE
 from pyorthogonalrouting.PointNode import PointNode
 from pyorthogonalrouting.PointNode import PointNodes
@@ -29,7 +37,17 @@ XToYDict         = NewType('XToYDict',         Dict[XStr, YToPointNodeDict])
 PointNodeSet     = Set[PointNode]
 
 
+@dataclass
+class GraphAndConnections:
+    graph:       'PointGraph' = cast('PointGraph', None)
+    connections: Lines        = field(default_factory=linesFactory)
+
+
 class PointNotFoundException(Exception):
+    pass
+
+
+class PointNodeNotFoundException(Exception):
     pass
 
 
@@ -42,6 +60,92 @@ class PointGraph:
         self.logger: Logger = getLogger(__name__)
 
         self._index: XToYDict = XToYDict({})
+
+    @classmethod
+    def createGraph(cls, spots: Points) -> GraphAndConnections:
+        """
+        Creates a graph connecting the specified points orthogonally
+
+        Args:
+            spots:
+
+        Returns:
+        """
+        hotXs:       Integers   = Integers([])
+        hotYs:       Integers   = Integers([])
+        graph:       PointGraph = PointGraph()
+        connections: Lines      = linesFactory()
+
+        for point in spots:
+            p: Point = cast(Point, point)
+            x, y = p.toTuple()
+
+            if x not in hotXs:
+                hotXs.append(x)
+            if y not in hotYs:
+                hotYs.append(y)
+            graph.add(p=p)
+
+        hotXs.sort()
+        hotYs.sort()
+
+        def inHotIndex(p: Point) -> bool:
+            return graph.has(p)
+
+        # TODO:
+        # Yeah, yeah, I know the following code is not "Pythonic";  I am doing
+        # a blind TypeScript port;  Once I getting converted and appropriately
+        # unit test it I can rewrite it;
+        #
+        i: int = 0
+        for i in range(len(hotYs)):
+            for j in range(len(hotXs)):
+                b: Point = Point(x=hotXs[j], y=hotYs[i])
+
+                if inHotIndex(b) is False:
+                    continue
+                if j > 0:
+                    a: Point = Point(x=hotXs[j - 1], y=hotYs[i])
+                    if inHotIndex(a) is True:
+                        graph.connect(a, b)
+                        graph.connect(b, a)
+                        connections.append(Line(a=a, b=b))
+                if i > 0:
+                    a = Point(x=hotXs[j], y=hotYs[i - 1])
+                    if inHotIndex(a) is True:
+                        graph.connect(a, b)
+                        graph.connect(b, a)
+                        connections.append(Line(a=a, b=b))
+
+        return GraphAndConnections(graph=graph, connections=connections)
+
+    @classmethod
+    def shortestPath(cls, graph: 'PointGraph', origin: Point, destination: Point) -> Points:
+        """
+        TODO: Not unit tested, yet.
+
+        Args:
+            graph:
+            origin:
+            destination:
+
+        Returns:
+        """
+
+        originNode: PointNode = graph.get(origin)
+        destinationNode: PointNode = graph.get(destination)
+
+        if originNode is None:
+            raise PointNodeNotFoundException(f'Origin Node {origin} not found')
+        if destinationNode is None:
+            raise PointNodeNotFoundException(f'Destination Node {destination} not found')
+
+        graph.calculateShortestPathFromSource(graph=graph, source=originNode)
+
+        pointNodes: PointNodes = destinationNode.shortestPath
+        points: Points = Points([pointNode.data for pointNode in pointNodes])
+
+        return points
 
     def add(self, p: Point):
 

@@ -62,7 +62,7 @@ class TestGrid(UnitTestBase):
 
         grid:      Grid      = Grid()
 
-        rectangles: Rectangles = grid.rectangles()
+        rectangles: Rectangles = grid.rectangles
 
         self.assertEqual(0, len(rectangles), 'No rectangles')
 
@@ -76,7 +76,7 @@ class TestGrid(UnitTestBase):
         grid.set(row=RowNumber(4), column=ColumnNumber(4), rectangle=rectangle2)
         grid.set(row=RowNumber(8), column=ColumnNumber(8), rectangle=rectangle1)
 
-        rectangles: Rectangles = grid.rectangles()
+        rectangles: Rectangles = grid.rectangles
 
         self.assertEqual(3, len(rectangles), 'No rectangles')
 
@@ -121,7 +121,7 @@ class TestGrid(UnitTestBase):
 
         gridPoints = Grid.gridToSpots(grid, Rectangles([inflatedA, inflatedB]))
 
-        self.logger.info(f'{gridPoints=}')
+        self.logger.debug(f'{gridPoints=}')
 
     def _buildTesGrid(self) -> Grid:
 

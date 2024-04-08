@@ -61,7 +61,7 @@ class TestDictionaryOfDictionary(UnitTestBase):
 
         list1 = list1 + list2
 
-        self.logger.info(f'{list1}')
+        self.logger.debug(f'{list1}')
 
 
 def suite() -> TestSuite:

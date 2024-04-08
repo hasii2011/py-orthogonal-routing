@@ -132,6 +132,7 @@ class Grid:
     def columns(self) -> int:
         return self._cols
 
+    @property
     def rectangles(self) -> Rectangles:
 
         r: Rectangles = Rectangles([])

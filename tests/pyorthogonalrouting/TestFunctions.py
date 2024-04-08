@@ -10,13 +10,19 @@ from codeallybasic.UnitTestBase import UnitTestBase
 
 from pyorthogonalrouting.Common import Integers
 from pyorthogonalrouting.Common import integerListFactory
+from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 
 from pyorthogonalrouting.Functions import distance
+from pyorthogonalrouting.Functions import extrudeConnectorPoint
+from pyorthogonalrouting.Functions import getBendDirection
 from pyorthogonalrouting.Functions import isVerticalSide
 from pyorthogonalrouting.Functions import reducePoints
+from pyorthogonalrouting.Functions import simplifyPaths
 
 from pyorthogonalrouting.Point import Point
 from pyorthogonalrouting.Point import Points
+from pyorthogonalrouting.Rect import Rect
+from pyorthogonalrouting.enumerations.BendDirection import BendDirection
 
 from pyorthogonalrouting.enumerations.Side import Side
 
@@ -38,6 +44,69 @@ class TestFunctions(UnitTestBase):
     def tearDown(self):
         super().tearDown()
 
+    def testGetBendNorth(self):
+        a: Point = Point(0, 100)
+        b: Point = Point(55, 100)
+        c: Point = Point(55, 0)
+
+        bendDirection: BendDirection = getBendDirection(a, b, c)
+
+        self.assertEqual(BendDirection.NORTH, bendDirection, '')
+
+    def testGetBendSouth(self):
+        a: Point = Point(0, 100)
+        b: Point = Point(55, 100)
+        c: Point = Point(55, 200)
+
+        bendDirection: BendDirection = getBendDirection(a, b, c)
+
+        self.assertEqual(BendDirection.SOUTH, bendDirection, '')
+
+    def testGetBendEast(self):
+        a: Point = Point(100, 100)
+        b: Point = Point(100, 200)
+        c: Point = Point(400, 200)
+
+        bendDirection: BendDirection = getBendDirection(a=a, b=b, c=c)
+
+        self.assertEqual(BendDirection.EAST, bendDirection, '')
+
+    def testGetBendWest(self):
+        a: Point = Point(100, 100)
+        b: Point = Point(100, 200)
+        c: Point = Point(50, 200)
+
+        bendDirection: BendDirection = getBendDirection(a=a, b=b, c=c)
+
+        self.assertEqual(BendDirection.WEST, bendDirection, '')
+
+    def testSimplifyPaths(self):
+
+        a:  Point = Point(100, 100)
+        b:  Point = Point(200, 101)
+        b1: Point = Point(200, 200)
+        c:  Point = Point(400, 200)
+
+        points: Points = Points([a, b, b1, c])
+
+        simplePath: Points = simplifyPaths(points)
+
+        self.logger.debug(f'{simplePath=}')
+
+        self.assertNotIn(b, simplePath, 'Funky one should be eliminated')
+
+    def testExtrudeConnectorPoint(self):
+
+        rect: Rect           = Rect(left=100, top=200, width=100, height=100)
+        cp:   ConnectorPoint = ConnectorPoint(shape=rect, side=Side.RIGHT, distance=5)
+
+        expectedExtrudedPoint: Point = Point(x=205, y=700)
+        extrudedPoint:         Point = extrudeConnectorPoint(cp=cp, margin=5)
+
+        self.assertEqual(expectedExtrudedPoint, extrudedPoint, 'Antennas do not match')
+
+        self.logger.debug(f'{extrudedPoint}')
+
     def testReducePoints(self):
         duplicatePoints: Points = Points(
             [
@@ -47,7 +116,7 @@ class TestFunctions(UnitTestBase):
             ]
         )
         reducedPoints: Points = reducePoints(points=duplicatePoints)
-        self.logger.info(f'{reducedPoints=}')
+        self.logger.debug(f'{reducedPoints=}')
         self.assertFalse(self._hasDuplicates(reducedPoints), 'Wowza, there should be no duplicates')
 
     def testDistance(self):

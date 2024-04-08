@@ -3,6 +3,7 @@ from typing import List
 from typing import NewType
 
 from dataclasses import dataclass
+from typing import Tuple
 from typing import cast
 
 from pyorthogonalrouting.Common import NOT_SET_INT
@@ -15,6 +16,9 @@ class Point:
     """
     x: int = NOT_SET_INT
     y: int = NOT_SET_INT
+
+    def toTuple(self) -> Tuple[int, int]:
+        return self.x, self.y
 
     def __hash__(self) -> int:
         return hash((self.x, self.y))

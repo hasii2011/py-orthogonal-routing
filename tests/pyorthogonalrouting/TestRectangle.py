@@ -33,7 +33,7 @@ class TestRectangle(UnitTestBase):
         rectangle2: Rectangle = Rectangle.fromLTRB(40, 40, 100, 50)
         rectangle3: Rectangle = Rectangle.fromLTRB(100, 60, 150, 75)
 
-        self.logger.info(f'{rectangle1=} {rectangle2=} {rectangle3=}')
+        self.logger.debug(f'{rectangle1=} {rectangle2=} {rectangle3=}')
 
     def testGetNotColliding(self):
 
@@ -51,7 +51,7 @@ class TestRectangle(UnitTestBase):
     def testObstacleCollision(self):
 
         obstacles: Rectangles = self._makeMeSomeObstacles()
-        self.logger.info(f'{obstacles=}')
+        self.logger.debug(f'{obstacles=}')
 
         point1: Point = makePt(5, 5)
         point2: Point = obstacles[1].location
@@ -74,7 +74,7 @@ class TestRectangle(UnitTestBase):
 
         obstacles: Rectangles = Rectangles([rectangle1, rectangle2, rectangle3])
 
-        self.logger.info(f'{obstacles=}')
+        self.logger.debug(f'{obstacles=}')
 
         return obstacles
 

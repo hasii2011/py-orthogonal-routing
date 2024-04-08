@@ -1,9 +1,9 @@
 
+from typing import cast
 from typing import List
 from typing import NewType
 
 from dataclasses import dataclass
-from typing import cast
 
 from pyorthogonalrouting.Common import NOT_SET_INT
 from pyorthogonalrouting.Rect import NO_RECT
