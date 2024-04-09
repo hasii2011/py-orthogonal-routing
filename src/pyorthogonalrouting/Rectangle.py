@@ -114,6 +114,10 @@ class Rectangle:
         return Point(x=self.left, y=self.top)
 
     @property
+    def east(self) -> Point:
+        return Point(x=self.right, y=self.center.y)
+
+    @property
     def north(self) -> Point:
         return Point(x=self.center.x, y=self.top)
 
@@ -124,10 +128,6 @@ class Rectangle:
     @property
     def west(self) -> Point:
         return Point(x=self.left, y=self.center.y)
-
-    @property
-    def east(self) -> Point:
-        return Point(x=self.right, y=self.center.y)
 
     @property
     def size(self) -> Size:

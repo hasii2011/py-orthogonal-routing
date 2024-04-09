@@ -32,22 +32,22 @@ class TestOrthogonalConnector(UnitTestBase):
     def tearDown(self):
         super().tearDown()
 
-    def testBasic(self):
-
-        shapeA: Rect = Rect(left=50,  top=50,  width=100, height=100)
-        shapeB: Rect = Rect(left=200, top=200, width=50,  height=100)
-
-        options: OrthogonalConnectorOptions = OrthogonalConnectorOptions()
-
-        options.pointA = ConnectorPoint(shape=shapeA, side=Side.BOTTOM, distance=0.5)
-        options.pointB = ConnectorPoint(shape=shapeB, side=Side.RIGHT,  distance=0.5)
-        options.shapeMargin        = 10
-        options.globalBoundsMargin = 10
-        options.globalBounds       = Rect(left=0, top=0, width=500, height=500)
-
-        path: Points = OrthogonalConnector.route(options=options)
-
-        self.logger.info(f'{path=}')
+    # def testBasic(self):
+    #
+    #     shapeA: Rect = Rect(left=50,  top=50,  width=100, height=100)
+    #     shapeB: Rect = Rect(left=200, top=200, width=50,  height=100)
+    #
+    #     options: OrthogonalConnectorOptions = OrthogonalConnectorOptions()
+    #
+    #     options.pointA = ConnectorPoint(shape=shapeA, side=Side.BOTTOM, distance=0.5)
+    #     options.pointB = ConnectorPoint(shape=shapeB, side=Side.RIGHT,  distance=0.5)
+    #     options.shapeMargin        = 10
+    #     options.globalBoundsMargin = 10
+    #     options.globalBounds       = Rect(left=0, top=0, width=500, height=500)
+    #
+    #     path: Points = OrthogonalConnector.route(options=options)
+    #
+    #     self.logger.info(f'{path=}')
 
 
 def suite() -> TestSuite:

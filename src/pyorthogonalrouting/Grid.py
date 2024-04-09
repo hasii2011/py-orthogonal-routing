@@ -94,14 +94,15 @@ class Grid:
         for row, data in grid._gridMap.items():
             firstRow: bool = row == 0
             lastRow:  bool = row == grid.rows - 1
+            grid.logger.info(f'{row}')
             for col, r in data.items():
                 firstCol: bool = col == 0
                 lastCol:  bool = col == grid.columns - 1
 
-                nw = firstCol and firstRow
-                ne = firstRow and lastCol
-                se = lastRow and lastCol
-                sw = lastRow and firstCol
+                nw: bool = firstCol and firstRow
+                ne: bool = firstRow and lastCol
+                se: bool = lastRow and lastCol
+                sw: bool = lastRow and firstCol
                 if nw or ne or se or sw:
                     gridPoints = Points(gridPoints + Points([r.northWest, r.northEast, r.southWest, r.southEast]))
                 elif firstRow is True:
@@ -115,13 +116,12 @@ class Grid:
                 else:
                     gridPoints = Points(gridPoints + Points([r.northWest, r.north, r.northEast, r.east, r.southEast, r.south, r.southWest, r.west, r.center]))
 
-            # obstacleCollision = (p: Point) = > obstacles.filter(o= > o.contains(p)).length > 0;
-            # filter out points that do not touch shapes
-            noCollisions: Points = Rectangle.getNotColliding(points=gridPoints, rectangles=obstacles)
-            noDuplicates: Points = reducePoints(noCollisions)
-            return noDuplicates
+        # obstacleCollision = (p: Point) = > obstacles.filter(o= > o.contains(p)).length > 0;
+        # filter out points that do not touch shapes
+        noCollisions: Points = Rectangle.getNotColliding(points=gridPoints, rectangles=obstacles)
+        noDuplicates: Points = reducePoints(noCollisions)
 
-        return gridPoints
+        return noDuplicates
 
     @property
     def rows(self) -> int:
