@@ -6,6 +6,7 @@ from codeallybasic.UnitTestBase import UnitTestBase
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnector import OrthogonalConnector
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
+
 from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.enumerations.Side import Side

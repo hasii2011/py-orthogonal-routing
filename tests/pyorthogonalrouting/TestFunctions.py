@@ -176,7 +176,7 @@ class TestFunctions(UnitTestBase):
         integers: Integers = Integers([100, 200, 300])
 
         for i in range(len(integers)):
-            self.logger.info(f'integers[{i}]={integers[i]}')
+            self.logger.debug(f'integers[{i}]={integers[i]}')
 
     def _runAppendComputation(self, sideAVertical: bool, sideBVertical: bool) -> Tuple[Integers, Integers]:
 

@@ -94,7 +94,7 @@ class Grid:
         for row, data in grid._gridMap.items():
             firstRow: bool = row == 0
             lastRow:  bool = row == grid.rows - 1
-            grid.logger.info(f'{row}')
+
             for col, r in data.items():
                 firstCol: bool = col == 0
                 lastCol:  bool = col == grid.columns - 1

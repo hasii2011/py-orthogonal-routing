@@ -6,7 +6,6 @@ from typing import NewType
 from dataclasses import dataclass
 
 from pyorthogonalrouting.Common import NOT_SET_FLOAT
-from pyorthogonalrouting.Common import NOT_SET_INT
 from pyorthogonalrouting.Rect import NO_RECT
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.enumerations.Side import Side
