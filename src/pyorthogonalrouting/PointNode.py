@@ -35,6 +35,28 @@ class PointNode:
     adjacentNodes: PointNodesMap = field(default_factory=pointNodesMapFactory)
     data:          Point         = NO_POINT
 
+    @classmethod
+    def typeScriptCopy(cls, pointNode: 'PointNode') -> 'PointNode':
+        """
+        Emulate the TypeScript copy mechanism.
+
+        See https://stackoverflow.com/questions/50051149/does-spreading-create-shallow-copy
+
+        Args:
+            pointNode:
+
+        Returns:
+        """
+
+        doppleGanger: PointNode = PointNode()
+
+        doppleGanger.distance      = pointNode.distance
+        doppleGanger.data          = Point(x=pointNode.data.x, y=pointNode.data.y)
+        doppleGanger.shortestPath  = pointNode.shortestPath
+        doppleGanger.adjacentNodes = pointNode.adjacentNodes
+
+        return doppleGanger
+
     def __eq__(self, other) -> bool:
         """
 
@@ -48,7 +70,7 @@ class PointNode:
         if isinstance(other, PointNode) is False:
             pass
         else:
-            if self.distance == other.distance and self.data == other.data:
+            if self.distance == other.distance and self.data.x == other.data.x and self.data.y == other.data.y:
                 ans = True
 
         return ans

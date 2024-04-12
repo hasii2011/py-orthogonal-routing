@@ -30,7 +30,7 @@
             "level":     "WARNING",
             "propagate": "True"
         },
-        "pyorthogonalrouting.Grid": {
+        "pyorthogonalrouting.PointGraph": {
             "level":     "INFO",
             "propagate": "False"
         },

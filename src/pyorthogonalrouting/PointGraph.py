@@ -8,8 +8,6 @@ from typing import cast
 from logging import Logger
 from logging import getLogger
 
-from copy import deepcopy
-
 from dataclasses import dataclass
 from dataclasses import field
 from pyorthogonalrouting.Common import INT_MAX
@@ -35,6 +33,7 @@ YToPointNodeDict = NewType('YToPointNodeDict', Dict[YStr, PointNode])
 XToYDict         = NewType('XToYDict',         Dict[XStr, YToPointNodeDict])
 
 PointNodeSet     = Set[PointNode]
+PointNodeDict    = NewType('PointNodeDict', Dict[Point, PointNode])
 
 
 @dataclass
@@ -203,19 +202,28 @@ class PointGraph:
     def calculateShortestPathFromSource(self, graph: 'PointGraph', source: PointNode) -> 'PointGraph':
 
         source.distance = 0
-        settledNodes:   PointNodeSet = set()
-        unSettledNodes: PointNodeSet = set()
+        settledNodes:   PointNodeSet  = set()
+        #
+        # TODO:
+        # Yeah, had to use a dictionary here to track unsettled nodes;  Seems like a bug in
+        # how the set object was removing an incorrect node, which resulted in an error
+        # Need to look at this sometime in the future
+        #
+        unSettledNodes: PointNodeDict = PointNodeDict({})
 
-        unSettledNodes.add(source)
+        unSettledNodes[source.data] = source
 
         while len(unSettledNodes) != 0:
             currentNode: PointNode = self._getLowestDistanceNode(unSettledNodes)
-            unSettledNodes.remove(currentNode)
+            # self.logger.info(f'{currentNode=}')
+            # unSettledNodes.remove(currentNode)
+            del unSettledNodes[currentNode.data]
+            # unSettledNodes.discard(currentNode)
 
             for adjacentNode, edgeWeight in currentNode.adjacentNodes.items():
                 if adjacentNode not in settledNodes:
                     self._calculateMinimumDistance(evaluationNode=adjacentNode, edgeWeight=edgeWeight, sourceNode=currentNode)
-                    unSettledNodes.add(adjacentNode)
+                    unSettledNodes[adjacentNode.data] = adjacentNode
             settledNodes.add(currentNode)
 
         return graph
@@ -246,17 +254,18 @@ class PointGraph:
         else:
             return Direction.UNKNOWN
 
-    def _getLowestDistanceNode(self, unSettledNodes: PointNodeSet) -> PointNode:
+    def _getLowestDistanceNode(self, unSettledNodes: PointNodeDict) -> PointNode:
 
-        lowestDistanceNode: PointNode = PointNode()
+        lowestDistanceNode: PointNode = cast(PointNode, None)
         lowestDistance:     int       = INT_MAX
-        for n in unSettledNodes:
+        for n in unSettledNodes.values():
             node:         PointNode = cast(PointNode, n)
             nodeDistance: int       = node.distance
             if nodeDistance < lowestDistance:
                 lowestDistance     = nodeDistance
                 lowestDistanceNode = node
 
+        self.logger.debug(f'{lowestDistanceNode=}')
         return lowestDistanceNode
 
     def _calculateMinimumDistance(self, evaluationNode: PointNode, edgeWeight: int, sourceNode: PointNode):
@@ -284,8 +293,13 @@ class PointGraph:
 
             evaluationNode.distance  = sourceDistance + edgeWeight + extraWeight
             # shortestPath: PointNode[] = [...sourceNode.shortestPath]
-            shortestPath: PointNodes = deepcopy(sourceNode.shortestPath)
-            shortestPath.append(sourceNode)
+            # shortestPath: PointNodes = deepcopy(sourceNode.shortestPath)
+            # shortestPath: PointNodes = copy(sourceNode.shortestPath)
+            shortestPath: PointNodes = self._typeScriptSpread(sourceNode.shortestPath)
+
+            sourceDoppleGanger: PointNode = PointNode.typeScriptCopy(sourceNode)
+            # shortestPath.append(sourceNode)
+            shortestPath.append(sourceDoppleGanger)
             evaluationNode.shortestPath = shortestPath
 
     def _pointToString(self, p: Point) -> Tuple[XStr, YStr]:
@@ -315,3 +329,22 @@ class PointGraph:
 
         prettyIndex = f'{prettyIndex}\n{rc}'
         self.logger.info(f'{prettyIndex}')
+
+    def _typeScriptSpread(self, pointNodes: PointNodes) -> PointNodes:
+        """
+        See:
+            https://stackoverflow.com/questions/50051149/does-spreading-create-shallow-copy
+
+        Args:
+            pointNodes:
+
+        Returns:
+        """
+
+        doppleGanger: PointNodes = PointNodes([])
+
+        for pt in pointNodes:
+            duplicate: PointNode = PointNode.typeScriptCopy(pt)
+            doppleGanger.append(duplicate)
+
+        return doppleGanger

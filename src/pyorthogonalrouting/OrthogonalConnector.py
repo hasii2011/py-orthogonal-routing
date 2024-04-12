@@ -154,7 +154,6 @@ class OrthogonalConnector:
         path: Points = PointGraph.shortestPath(graph, origin, destination)
 
         if len(path) > 0:
-            # No need to re-compute the path
             pathToSimplify: Points = Points(Points([start]) + path + Points([end]))
             return simplifyPaths(points=pathToSimplify)
         else:

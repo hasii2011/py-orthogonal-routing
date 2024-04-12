@@ -21,6 +21,7 @@ from pyorthogonalrouting.Functions import simplifyPaths
 
 from pyorthogonalrouting.Point import Point
 from pyorthogonalrouting.Point import Points
+from pyorthogonalrouting.PointNode import PointNode
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.enumerations.BendDirection import BendDirection
 
@@ -177,6 +178,18 @@ class TestFunctions(UnitTestBase):
 
         for i in range(len(integers)):
             self.logger.debug(f'integers[{i}]={integers[i]}')
+
+    def testTSSets(self):
+        pointNode1: PointNode = PointNode(distance=2052, data=Point(x=30, y=220))
+        pointNode2: PointNode = PointNode(distance=1061, data=Point(x=30, y=190))
+
+        bumSet = set()
+        bumSet.add(pointNode1)
+        bumSet.add(pointNode2)
+
+        bumSet.remove(pointNode2)
+
+        self.logger.info(f'{bumSet}')
 
     def _runAppendComputation(self, sideAVertical: bool, sideBVertical: bool) -> Tuple[Integers, Integers]:
 
