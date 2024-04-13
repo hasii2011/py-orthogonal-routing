@@ -30,6 +30,11 @@ from pyorthogonalrouting.enumerations.Side import Side
 
 
 class OrthogonalConnector:
+    """
+    https://medium.com/swlh/routing-orthogonal-diagram-connectors-in-javascript-191dc2c5ff70
+    https://gist.github.com/jose-mdz/4a8894c152383b9d7a870c24a04447e4
+
+    """
 
     byProduct: OrthogonalConnectorByProduct = OrthogonalConnectorByProduct()
 
