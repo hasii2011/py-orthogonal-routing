@@ -1,6 +1,16 @@
 
 from enum import Enum
 
+from wx.lib.newevent import NewEvent
+
+#
+# The constructor returns a tuple; The first entry is the event,  The second is the binder
+#
+ShowRulersEvent,          EVT_SHOW_RULERS           = NewEvent()
+ShowMainGridEvent,        EVT_SHOW_MAIN_GRID        = NewEvent()
+ShowReferencePointsEvent, EVT_SHOW_REFERENCE_POINTS = NewEvent()
+ShowRoutGridEvent,        EVT_SHOW_ROUTE_GRID       = NewEvent()
+
 
 class DemoEventType(Enum):
 

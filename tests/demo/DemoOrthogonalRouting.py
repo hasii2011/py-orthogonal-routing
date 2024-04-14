@@ -19,6 +19,7 @@ from codeallybasic.UnitTestBase import UnitTestBase
 
 from tests.demo.DemoControlFrame import DemoControlFrame
 from tests.demo.DemoDiagramFrame import DemoDiagramFrame
+from tests.demo.DemoEventEngine import DemoEventEngine
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 FRAME_WIDTH:  int = 1280
@@ -59,8 +60,12 @@ class DemoOrthogonalRouting(App):
         self.SetTopWindow(self._topLevelFrame)
 
         self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = OrthogonalConnectorAdapter()
+        self._eventEngine:                DemoEventEngine            = DemoEventEngine(listeningWindow=sizedPanel)
 
         self._diagramFrame.orthogonalConnectorAdapter = self._orthogonalConnectorAdapter
+        self._diagramFrame.eventEngine                = self._eventEngine
+        self._controlFrame.eventEngine                = self._eventEngine
+
         self._orthogonalConnectorAdapter.runDefaultDemo()
 
         self._topLevelFrame.SetAutoLayout(True)

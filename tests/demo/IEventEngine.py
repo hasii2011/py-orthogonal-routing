@@ -6,7 +6,7 @@ from abc import abstractmethod
 
 from wx import PyEventBinder
 
-from tests.demo.DemoEventType import DemoEventType
+from tests.demo.DemoEvents import DemoEventType
 
 
 class IEventEngine(ABC):

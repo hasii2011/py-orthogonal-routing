@@ -20,6 +20,9 @@ from wx import Window
 
 from wx.lib.sized_controls import SizedPanel
 
+from tests.demo.DemoEvents import DemoEventType
+from tests.demo.IEventEngine import IEventEngine
+
 
 class DemoControlFrame(SizedPanel):
 
@@ -40,9 +43,20 @@ class DemoControlFrame(SizedPanel):
         self._shapeAConnectionPosition: SpinCtrlDouble = cast(SpinCtrlDouble, None)
         self._shapeBConnectionPosition: SpinCtrlDouble = cast(SpinCtrlDouble, None)
 
+        self._eventEngine: IEventEngine = cast(IEventEngine, None)
+
         self._layoutControls(self)
         self._setControlValues()
         self._bindCallbacks(parent=self)
+
+    @property
+    def eventEngine(self):
+        return
+
+    @eventEngine.setter
+    def eventEngine(self, eventEngine: IEventEngine):
+        assert self._eventEngine is None, 'You should only set the event engine once'
+        self._eventEngine = eventEngine
 
     def _layoutControls(self, verticalPanel: SizedPanel):
         self._layoutAlgorithmLayers(verticalPanel)
@@ -117,6 +131,8 @@ class DemoControlFrame(SizedPanel):
 
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showReferencePoints - {newValue=}')
+
+        self._eventEngine.sendEvent(DemoEventType.SHOW_REFERENCE_POINTS, showReferencePoints=newValue)
 
     def _onShowRouteGrid(self, event: CommandEvent):
 

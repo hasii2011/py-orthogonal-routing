@@ -32,9 +32,16 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
+from pyorthogonalrouting.Point import Point
 from pyorthogonalrouting.Point import Points
 from tests.demo.DemoColorEnum import DemoColorEnum
+
+from tests.demo.DemoEvents import EVT_SHOW_REFERENCE_POINTS
+from tests.demo.DemoEvents import ShowReferencePointsEvent
+from tests.demo.IEventEngine import IEventEngine
+
 from tests.demo.DemoShape import DemoShape
+
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 DEFAULT_WIDTH = 6000
@@ -47,6 +54,9 @@ PIXELS_PER_UNIT_Y: int = 20
 DEFAULT_PEN:       Pen   = BLACK_PEN
 DEFAULT_BRUSH:     Brush = WHITE_BRUSH
 DEFAULT_FONT_SIZE: int = 10
+
+REFERENCE_POINT_WIDTH:  int = 8
+REFERENCE_POINT_HEIGHT: int = 8
 
 
 class DemoDiagramFrame(ScrolledWindow):
@@ -81,7 +91,23 @@ class DemoDiagramFrame(ScrolledWindow):
         self._nameFont:    Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
 
         self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = cast(OrthogonalConnectorAdapter, None)
+        self._eventEngine:                IEventEngine               = cast(IEventEngine, None)
+
+        self._showReferencePoints: bool = False
+
         self.Bind(EVT_PAINT, self.onPaint)
+
+    @property
+    def eventEngine(self):
+        return
+
+    @eventEngine.setter
+    def eventEngine(self, eventEngine: IEventEngine):
+
+        assert self._eventEngine is None, 'You should only set the event engine once'
+
+        self._eventEngine = eventEngine
+        self._eventEngine.registerListener(EVT_SHOW_REFERENCE_POINTS, self._onShowReferencePointsToggled)
 
     @property
     def orthogonalConnectorAdapter(self) -> OrthogonalConnectorAdapter:
@@ -113,8 +139,16 @@ class DemoDiagramFrame(ScrolledWindow):
         if self._orthogonalConnectorAdapter is not None:
             self._drawShapes(dc=mem)
             self._drawPath(dc=mem)
+            if self._showReferencePoints is True:
+                self._drawReferencePoints(dc=mem)
 
         dc.Blit(0, 0, w, h, mem, x, y)
+
+    def _onShowReferencePointsToggled(self, event: ShowReferencePointsEvent):
+
+        self._showReferencePoints = event.showReferencePoints
+        self.logger.debug(f'{self._showReferencePoints=}')
+        self.Refresh()
 
     def createDC(self, w: int, h: int) -> MemoryDC:
         """
@@ -231,13 +265,31 @@ class DemoDiagramFrame(ScrolledWindow):
             pt1 = points[currentIdx]
             pt2 = points[nextIdx]
 
-            tuplePair = pt1.x, pt1.y,pt2.x, pt2.y
+            tuplePair = pt1.x, pt1.y, pt2.x, pt2.y
             tupleSequence.append(tuplePair)
 
         dc.DrawLineList(tupleSequence, BLACK_PEN)
 
-    # def _computeShapeCenter(self, node: Node) -> Point:
-    #
-    #     centeredPoint: Point = Point(x=node.location.x + (node.size.width // 2), y=node.location.y + (node.size.height // 2))
-    #
-    #     return centeredPoint
+    def _drawReferencePoints(self, dc: MemoryDC):
+
+        savePen:   Pen   = dc.GetPen()
+        saveBrush: Brush = dc.GetBrush()
+
+        dc.SetPen(BLACK_PEN)
+        dc.SetBrush(Brush(DemoColorEnum.toWxColor(DemoColorEnum.ALICE_BLUE)))
+
+        points: Points = self._orthogonalConnectorAdapter.spots
+
+        for pt in points:
+            point: Point = self._computeShapeCenter(x=pt.x, y=pt.y, width=REFERENCE_POINT_WIDTH, height=REFERENCE_POINT_HEIGHT)
+            # point: Point = cast(Point, pt)
+            dc.DrawEllipse(x=point.x, y=point.y, width=REFERENCE_POINT_WIDTH, height=REFERENCE_POINT_HEIGHT)
+
+        dc.SetPen(savePen)
+        dc.SetBrush(saveBrush)
+
+    def _computeShapeCenter(self, x: int, y: int, width: int, height: int) -> Point:
+
+        centeredPoint: Point = Point(x=x + (width // 2), y=y + (height // 2))
+
+        return centeredPoint

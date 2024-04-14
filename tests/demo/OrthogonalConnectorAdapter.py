@@ -6,8 +6,9 @@ from logging import getLogger
 
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnector import OrthogonalConnector
-from pyorthogonalrouting.OrthogonalConnectorByProduct import OrthogonalConnectorByProducts
+from pyorthogonalrouting.OrthogonalConnectorByProduct import OrthogonalConnectorByProduct
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
+
 from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Rect import Rect
 
@@ -24,8 +25,8 @@ class OrthogonalConnectorAdapter:
         self._sourceRect:      Rect = cast(Rect, None)
         self._destinationRect: Rect = cast(Rect, None)
 
-        self._byProducts: OrthogonalConnectorByProducts = cast(OrthogonalConnectorByProducts, None)
-        self._path:       Points                        = cast(Points, None)
+        self._byProducts: OrthogonalConnectorByProduct = cast(OrthogonalConnectorByProduct, None)
+        self._path:       Points                       = cast(Points, None)
 
     @property
     def sourceShape(self) -> DemoShape:
@@ -43,6 +44,10 @@ class OrthogonalConnectorAdapter:
     def path(self) -> Points:
         return self._path
 
+    @property
+    def spots(self) -> Points:
+        return self._byProducts.spots
+
     def runDefaultDemo(self):
 
         self._sourceRect      = Rect(left=50,  top=50,  width=100, height=100)
@@ -57,3 +62,5 @@ class OrthogonalConnectorAdapter:
         options.globalBounds       = Rect(left=0, top=0, width=500, height=500)
 
         self._path = OrthogonalConnector.route(options=options)
+
+        self._byProducts = OrthogonalConnector.byProduct
