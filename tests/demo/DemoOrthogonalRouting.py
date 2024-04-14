@@ -19,6 +19,7 @@ from codeallybasic.UnitTestBase import UnitTestBase
 
 from tests.demo.DemoControlFrame import DemoControlFrame
 from tests.demo.DemoDiagramFrame import DemoDiagramFrame
+from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 FRAME_WIDTH:  int = 1280
 FRAME_HEIGHT: int = 800
@@ -56,6 +57,11 @@ class DemoOrthogonalRouting(App):
         self._createApplicationMenuBar()
 
         self.SetTopWindow(self._topLevelFrame)
+
+        self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = OrthogonalConnectorAdapter()
+
+        self._diagramFrame.orthogonalConnectorAdapter = self._orthogonalConnectorAdapter
+        self._orthogonalConnectorAdapter.runDefaultDemo()
 
         self._topLevelFrame.SetAutoLayout(True)
         self._topLevelFrame.Show(True)

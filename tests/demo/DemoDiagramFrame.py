@@ -32,6 +32,10 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
+from pyorthogonalrouting.Point import Points
+from tests.demo.DemoColorEnum import DemoColorEnum
+from tests.demo.DemoShape import DemoShape
+from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 DEFAULT_WIDTH = 6000
 A4_FACTOR:    float = 1.41
@@ -76,7 +80,16 @@ class DemoDiagramFrame(ScrolledWindow):
         self._defaultFont: Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
         self._nameFont:    Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
 
+        self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = cast(OrthogonalConnectorAdapter, None)
         self.Bind(EVT_PAINT, self.onPaint)
+
+    @property
+    def orthogonalConnectorAdapter(self) -> OrthogonalConnectorAdapter:
+        return self._orthogonalConnectorAdapter
+
+    @orthogonalConnectorAdapter.setter
+    def orthogonalConnectorAdapter(self, newValue: OrthogonalConnectorAdapter):
+        self._orthogonalConnectorAdapter = newValue
 
     # noinspection PyUnusedLocal
     def Refresh(self, eraseBackground: bool = True, rect: Rect = None):
@@ -96,6 +109,10 @@ class DemoDiagramFrame(ScrolledWindow):
         x, y = self.CalcUnscrolledPosition(0, 0)
 
         self._drawGrid(memDC=mem, width=w, height=h, startX=x, startY=y)
+
+        if self._orthogonalConnectorAdapter is not None:
+            self._drawShapes(dc=mem)
+            self._drawPath(dc=mem)
 
         dc.Blit(0, 0, w, h, mem, x, y)
 
@@ -170,6 +187,54 @@ class DemoDiagramFrame(ScrolledWindow):
     def _textHeight(self, dc: DC, text: str):
         height = dc.GetTextExtent(text)[1]
         return height
+
+    def _drawShapes(self, dc: MemoryDC):
+        """
+
+        Args:
+            dc:  Make sure this is a memory DC
+        """
+
+        sourceShape:      DemoShape = self._orthogonalConnectorAdapter.sourceShape
+        destinationShape: DemoShape = self._orthogonalConnectorAdapter.destinationShape
+
+        savePen:   Pen   = dc.GetPen()
+        saveBrush: Brush = dc.GetBrush()
+
+        dc.SetBrush(Brush(DemoColorEnum.toWxColor(DemoColorEnum.ALICE_BLUE)))
+
+        self._drawShape(dc, sourceShape)
+        self._drawShape(dc, destinationShape)
+
+        dc.SetPen(savePen)
+        dc.SetBrush(saveBrush)
+
+    def _drawShape(self, dc: MemoryDC, demoShape: DemoShape):
+
+        x: int = demoShape.left
+        y: int = demoShape.top
+        width: int = demoShape.width
+        height: int = demoShape.height
+
+        dc.DrawRoundedRectangle(x=x, y=y, width=width, height=height, radius=8.0)
+
+    def _drawPath(self, dc: MemoryDC):
+
+        points: Points = self._orthogonalConnectorAdapter.path
+
+        tupleSequence = []
+        for x in range(len(points)):
+            currentIdx = x
+            nextIdx    = currentIdx + 1
+            if nextIdx > len(points) - 1:
+                break
+            pt1 = points[currentIdx]
+            pt2 = points[nextIdx]
+
+            tuplePair = pt1.x, pt1.y,pt2.x, pt2.y
+            tupleSequence.append(tuplePair)
+
+        dc.DrawLineList(tupleSequence, BLACK_PEN)
 
     # def _computeShapeCenter(self, node: Node) -> Point:
     #
