@@ -189,7 +189,7 @@ class TestFunctions(UnitTestBase):
 
         bumSet.remove(pointNode2)
 
-        self.logger.info(f'{bumSet}')
+        self.logger.debug(f'{bumSet}')
 
     def _runAppendComputation(self, sideAVertical: bool, sideBVertical: bool) -> Tuple[Integers, Integers]:
 
