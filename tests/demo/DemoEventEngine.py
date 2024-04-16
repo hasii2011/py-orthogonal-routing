@@ -10,6 +10,8 @@ from wx import Window
 
 from tests.demo.DemoEvents import DemoEventType
 from tests.demo.DemoEvents import ShowReferencePointsEvent
+from tests.demo.DemoEvents import ShowRouteGridEvent
+from tests.demo.DemoEvents import ShowRulersEvent
 from tests.demo.IEventEngine import IEventEngine
 
 
@@ -18,6 +20,8 @@ class InvalidKeywordException(Exception):
 
 
 SHOW_REFERENCE_POINTS_PARAMETER: str = 'showReferencePoints'
+SHOW_ROUTE_GRID_PARAMETER:       str = 'showRouteGrid'
+SHOW_RULERS_PARAMETER:           str = 'showRulers'
 
 
 class DemoEventEngine(IEventEngine):
@@ -36,6 +40,10 @@ class DemoEventEngine(IEventEngine):
             match eventType:
                 case DemoEventType.SHOW_REFERENCE_POINTS:
                     self._sendShowReferencePointsEvent(**kwargs)
+                case DemoEventType.SHOW_ROUTE_GRID:
+                    self._sendShowRouteGridEvent(**kwargs)
+                case DemoEventType.SHOW_RULERS:
+                    self._sendShowRulersEvent(**kwargs)
                 case _:
                     self.logger.warning(f'Unknown Ogl Event Type: {eventType}')
         except KeyError as ke:
@@ -45,7 +53,17 @@ class DemoEventEngine(IEventEngine):
     def _sendShowReferencePointsEvent(self, **kwargs):
 
         show: bool = kwargs[SHOW_REFERENCE_POINTS_PARAMETER]
+        showReferencePointsEvent: ShowReferencePointsEvent = ShowReferencePointsEvent(showReferencePoints=show)
+        PostEvent(dest=self._listeningWindow, event=showReferencePointsEvent)
 
-        selectedEvent: ShowReferencePointsEvent = ShowReferencePointsEvent(showReferencePoints=show)
+    def _sendShowRouteGridEvent(self, **kwargs):
 
-        PostEvent(dest=self._listeningWindow, event=selectedEvent)
+        show:  bool               = kwargs[SHOW_ROUTE_GRID_PARAMETER]
+        event: ShowRouteGridEvent = ShowRouteGridEvent(showRouteGrid=show)
+        PostEvent(dest=self._listeningWindow, event=event)
+
+    def _sendShowRulersEvent(self, **kwargs):
+
+        show:  bool            = kwargs[SHOW_RULERS_PARAMETER]
+        event: ShowRulersEvent = ShowRulersEvent(showRulers=show)
+        PostEvent(dest=self._listeningWindow, event=event)

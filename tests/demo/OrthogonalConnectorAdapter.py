@@ -4,6 +4,7 @@ from typing import cast
 from logging import Logger
 from logging import getLogger
 
+from pyorthogonalrouting.Common import Integers
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnector import OrthogonalConnector
 from pyorthogonalrouting.OrthogonalConnectorByProduct import OrthogonalConnectorByProduct
@@ -11,6 +12,7 @@ from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOp
 
 from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Rect import Rect
+from pyorthogonalrouting.Rectangle import Rectangles
 
 from pyorthogonalrouting.enumerations.Side import Side
 from tests.demo.DemoShape import DemoShape
@@ -25,8 +27,9 @@ class OrthogonalConnectorAdapter:
         self._sourceRect:      Rect = cast(Rect, None)
         self._destinationRect: Rect = cast(Rect, None)
 
-        self._byProducts: OrthogonalConnectorByProduct = cast(OrthogonalConnectorByProduct, None)
-        self._path:       Points                       = cast(Points, None)
+        self._byProducts:   OrthogonalConnectorByProduct = cast(OrthogonalConnectorByProduct, None)
+        self._path:         Points                       = cast(Points, None)
+        self._globalBounds: Rect                         = cast(Rect, None)
 
     @property
     def sourceShape(self) -> DemoShape:
@@ -48,6 +51,21 @@ class OrthogonalConnectorAdapter:
     def spots(self) -> Points:
         return self._byProducts.spots
 
+    @property
+    def routeGrid(self) -> Rectangles:
+        return self._byProducts.grid
+
+    @property
+    def hRulers(self) -> Integers:
+        return self._byProducts.hRulers
+
+    @property
+    def vRulers(self) -> Integers:
+        return self._byProducts.vRulers
+
+    def globalBounds(self) -> Rect:
+        return self._globalBounds
+
     def runDefaultDemo(self):
 
         self._sourceRect      = Rect(left=50,  top=50,  width=100, height=100)
@@ -61,6 +79,7 @@ class OrthogonalConnectorAdapter:
         options.globalBoundsMargin = 10
         options.globalBounds       = Rect(left=0, top=0, width=500, height=500)
 
+        self._globalBounds = options.globalBounds
         self._path = OrthogonalConnector.route(options=options)
 
         self._byProducts = OrthogonalConnector.byProduct

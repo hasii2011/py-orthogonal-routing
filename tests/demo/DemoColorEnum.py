@@ -31,6 +31,8 @@ class DemoColorEnum(Enum):
     GAINSBORO         = 'Gainsboro'
     LIGHT_YELLOW      = 'Light Yellow'
     MINT_CREAM        = 'Mint Cream'
+    VIOLET_RED        = 'Violet Red'
+    MEDIUM_VIOLET_RED = 'Medium Violet Red'
 
     @classmethod
     def toWxColor(cls, colorEnum: 'DemoColorEnum') -> Colour:

@@ -19,6 +19,7 @@ from wx import Font
 from wx import LIGHT_GREY
 from wx import MemoryDC
 from wx import PENSTYLE_DOT
+from wx import PENSTYLE_LONG_DASH
 from wx import PaintDC
 from wx import PaintEvent
 from wx import Pen
@@ -32,12 +33,21 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
+from pyorthogonalrouting.Common import Integers
 from pyorthogonalrouting.Point import Point
 from pyorthogonalrouting.Point import Points
+from pyorthogonalrouting.Rectangle import Rectangle
+from pyorthogonalrouting.Rectangle import Rectangles
+from pyorthogonalrouting.Rect import Rect as OrthoRect
+
 from tests.demo.DemoColorEnum import DemoColorEnum
 
 from tests.demo.DemoEvents import EVT_SHOW_REFERENCE_POINTS
+from tests.demo.DemoEvents import EVT_SHOW_ROUTE_GRID
+from tests.demo.DemoEvents import EVT_SHOW_RULERS
 from tests.demo.DemoEvents import ShowReferencePointsEvent
+from tests.demo.DemoEvents import ShowRouteGridEvent
+from tests.demo.DemoEvents import ShowRulersEvent
 from tests.demo.IEventEngine import IEventEngine
 
 from tests.demo.DemoShape import DemoShape
@@ -57,6 +67,7 @@ DEFAULT_FONT_SIZE: int = 10
 
 REFERENCE_POINT_WIDTH:  int = 8
 REFERENCE_POINT_HEIGHT: int = 8
+REFERENCE_POINT_RADIUS: int = 4
 
 
 class DemoDiagramFrame(ScrolledWindow):
@@ -94,6 +105,8 @@ class DemoDiagramFrame(ScrolledWindow):
         self._eventEngine:                IEventEngine               = cast(IEventEngine, None)
 
         self._showReferencePoints: bool = False
+        self._showRouteGrid:       bool = False
+        self._showRulers:          bool = False
 
         self.Bind(EVT_PAINT, self.onPaint)
 
@@ -108,6 +121,8 @@ class DemoDiagramFrame(ScrolledWindow):
 
         self._eventEngine = eventEngine
         self._eventEngine.registerListener(EVT_SHOW_REFERENCE_POINTS, self._onShowReferencePointsToggled)
+        self._eventEngine.registerListener(EVT_SHOW_ROUTE_GRID,       self._onShowRouteGridToggled)
+        self._eventEngine.registerListener(EVT_SHOW_RULERS,           self._onShowRulersToggled)
 
     @property
     def orthogonalConnectorAdapter(self) -> OrthogonalConnectorAdapter:
@@ -134,13 +149,19 @@ class DemoDiagramFrame(ScrolledWindow):
 
         x, y = self.CalcUnscrolledPosition(0, 0)
 
-        self._drawGrid(memDC=mem, width=w, height=h, startX=x, startY=y)
+        # self._drawGrid(memDC=mem, width=w, height=h, startX=x, startY=y)
 
         if self._orthogonalConnectorAdapter is not None:
-            self._drawShapes(dc=mem)
-            self._drawPath(dc=mem)
+
+            if self._showRouteGrid is True:
+                self._drawRouteGrid(dc=mem)
             if self._showReferencePoints is True:
                 self._drawReferencePoints(dc=mem)
+            if self._showRulers is True:
+                self._drawRulers(dc=mem)
+
+            self._drawShapes(dc=mem)
+            self._drawPath(dc=mem)
 
         dc.Blit(0, 0, w, h, mem, x, y)
 
@@ -148,6 +169,16 @@ class DemoDiagramFrame(ScrolledWindow):
 
         self._showReferencePoints = event.showReferencePoints
         self.logger.debug(f'{self._showReferencePoints=}')
+        self.Refresh()
+
+    def _onShowRouteGridToggled(self, event: ShowRouteGridEvent):
+
+        self._showRouteGrid = event.showRouteGrid
+        self.Refresh()
+
+    def _onShowRulersToggled(self, event: ShowRulersEvent):
+
+        self._showRulers = event.showRulers
         self.Refresh()
 
     def createDC(self, w: int, h: int) -> MemoryDC:
@@ -209,8 +240,15 @@ class DemoDiagramFrame(ScrolledWindow):
 
         gridLineColor: Colour   = LIGHT_GREY
         gridLineStyle: PenStyle = PENSTYLE_DOT
+        pen:           Pen      = Pen(PenInfo(gridLineColor).Style(gridLineStyle).Width(1))
 
-        pen:           Pen    = Pen(PenInfo(gridLineColor).Style(gridLineStyle).Width(1))
+        return pen
+
+    def _getRulerPen(self) -> Pen:
+        gridLineColor: Colour = DemoColorEnum.toWxColor(DemoColorEnum.VIOLET_RED)
+
+        gridLineStyle: PenStyle = PENSTYLE_LONG_DASH
+        pen: Pen = Pen(PenInfo(gridLineColor).Style(gridLineStyle).Width(1))
 
         return pen
 
@@ -245,9 +283,9 @@ class DemoDiagramFrame(ScrolledWindow):
 
     def _drawShape(self, dc: MemoryDC, demoShape: DemoShape):
 
-        x: int = demoShape.left
-        y: int = demoShape.top
-        width: int = demoShape.width
+        x:      int = demoShape.left
+        y:      int = demoShape.top
+        width:  int = demoShape.width
         height: int = demoShape.height
 
         dc.DrawRoundedRectangle(x=x, y=y, width=width, height=height, radius=8.0)
@@ -281,15 +319,55 @@ class DemoDiagramFrame(ScrolledWindow):
         points: Points = self._orthogonalConnectorAdapter.spots
 
         for pt in points:
-            point: Point = self._computeShapeCenter(x=pt.x, y=pt.y, width=REFERENCE_POINT_WIDTH, height=REFERENCE_POINT_HEIGHT)
-            # point: Point = cast(Point, pt)
-            dc.DrawEllipse(x=point.x, y=point.y, width=REFERENCE_POINT_WIDTH, height=REFERENCE_POINT_HEIGHT)
+            # point: Point = self._computeShapeCenter(x=pt.x, y=pt.y, width=REFERENCE_POINT_WIDTH, height=REFERENCE_POINT_HEIGHT)
+            # dc.DrawEllipse(x=point.x, y=point.y, width=REFERENCE_POINT_WIDTH, height=REFERENCE_POINT_HEIGHT)
+            point: Point = cast(Point, pt)
+            dc.DrawCircle(x=point.x, y=point.y, radius=REFERENCE_POINT_RADIUS)
+        dc.SetPen(savePen)
+        dc.SetBrush(saveBrush)
+
+    def _drawRouteGrid(self, dc: MemoryDC):
+        savePen:   Pen   = dc.GetPen()
+        saveBrush: Brush = dc.GetBrush()
+
+        dc.SetPen(self._getGridPen())
+        rectangles: Rectangles = self._orthogonalConnectorAdapter.routeGrid
+        for r in rectangles:
+            rectangle: Rectangle = cast(Rectangle, r)
+
+            x:      int = rectangle.left
+            y:      int = rectangle.top
+            width:  int = rectangle.width
+            height: int = rectangle.height
+
+            dc.DrawRectangle(x=x, y=y, width=width, height=height)
+
+        dc.SetPen(savePen)
+        dc.SetBrush(saveBrush)
+
+    def _drawRulers(self, dc: MemoryDC):
+
+        savePen:   Pen   = dc.GetPen()
+        saveBrush: Brush = dc.GetBrush()
+
+        dc.SetPen(self._getRulerPen())
+
+        horizontalRulers: Integers  = self._orthogonalConnectorAdapter.hRulers
+        verticalRulers:   Integers  = self._orthogonalConnectorAdapter.vRulers
+        globalBounds:     OrthoRect = self._orthogonalConnectorAdapter.globalBounds()
+
+        for y in horizontalRulers:
+            dc.DrawLine(x1=0, y1=y, x2=globalBounds.width, y2=y)
+
+        for x in verticalRulers:
+            self.logger.info(f'{x=}')
+            dc.DrawLine(x1=x, y1=0, x2=x, y2=globalBounds.height)
 
         dc.SetPen(savePen)
         dc.SetBrush(saveBrush)
 
     def _computeShapeCenter(self, x: int, y: int, width: int, height: int) -> Point:
 
-        centeredPoint: Point = Point(x=x + (width // 2), y=y + (height // 2))
+        centeredPoint: Point = Point(x=x - (width // 2), y=y - (height // 2))
 
         return centeredPoint

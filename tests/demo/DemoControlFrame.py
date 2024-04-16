@@ -121,6 +121,7 @@ class DemoControlFrame(SizedPanel):
 
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showRulers - {newValue=}')
+        self._eventEngine.sendEvent(DemoEventType.SHOW_RULERS, showRulers=newValue)
 
     def _onShowMainGrid(self, event: CommandEvent):
 
@@ -138,3 +139,4 @@ class DemoControlFrame(SizedPanel):
 
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showRouteGrid - {newValue=}')
+        self._eventEngine.sendEvent(DemoEventType.SHOW_ROUTE_GRID, showRouteGrid=newValue)

@@ -9,7 +9,7 @@ from wx.lib.newevent import NewEvent
 ShowRulersEvent,          EVT_SHOW_RULERS           = NewEvent()
 ShowMainGridEvent,        EVT_SHOW_MAIN_GRID        = NewEvent()
 ShowReferencePointsEvent, EVT_SHOW_REFERENCE_POINTS = NewEvent()
-ShowRoutGridEvent,        EVT_SHOW_ROUTE_GRID       = NewEvent()
+ShowRouteGridEvent,       EVT_SHOW_ROUTE_GRID       = NewEvent()
 
 
 class DemoEventType(Enum):
