@@ -62,11 +62,11 @@ class DemoOrthogonalRouting(App):
         self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = OrthogonalConnectorAdapter()
         self._eventEngine:                DemoEventEngine            = DemoEventEngine(listeningWindow=sizedPanel)
 
-        self._diagramFrame.orthogonalConnectorAdapter = self._orthogonalConnectorAdapter
         self._diagramFrame.eventEngine                = self._eventEngine
         self._controlFrame.eventEngine                = self._eventEngine
 
         self._orthogonalConnectorAdapter.runDefaultDemo()
+        self._diagramFrame.orthogonalConnectorAdapter = self._orthogonalConnectorAdapter
 
         self._topLevelFrame.SetAutoLayout(True)
         self._topLevelFrame.Show(True)

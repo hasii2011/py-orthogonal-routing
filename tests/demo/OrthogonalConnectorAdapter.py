@@ -15,6 +15,7 @@ from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.Rectangle import Rectangles
 
 from pyorthogonalrouting.enumerations.Side import Side
+
 from tests.demo.DemoShape import DemoShape
 
 
@@ -31,17 +32,17 @@ class OrthogonalConnectorAdapter:
         self._path:         Points                       = cast(Points, None)
         self._globalBounds: Rect                         = cast(Rect, None)
 
+        self._sourceShape:      DemoShape = cast(DemoShape, None)
+        self._destinationShape: DemoShape = cast(DemoShape, None)
+
     @property
     def sourceShape(self) -> DemoShape:
 
-        return DemoShape(left=self._sourceRect.left, top=self._sourceRect.top,
-                         width=self._sourceRect.width, height=self._sourceRect.height)
+        return self._sourceShape
 
     @property
     def destinationShape(self) -> DemoShape:
-
-        return DemoShape(left=self._destinationRect.left, top=self._destinationRect.top,
-                         width=self._destinationRect.width, height=self._destinationRect.height)
+        return self._destinationShape
 
     @property
     def path(self) -> Points:
@@ -70,6 +71,12 @@ class OrthogonalConnectorAdapter:
 
         self._sourceRect      = Rect(left=50,  top=50,  width=100, height=100)
         self._destinationRect = Rect(left=200, top=200, width=50,  height=100)
+
+        self._sourceShape = DemoShape(left=self._sourceRect.left, top=self._sourceRect.top,
+                                      width=self._sourceRect.width, height=self._sourceRect.height)
+
+        self._destinationShape = DemoShape(left=self._destinationRect.left, top=self._destinationRect.top,
+                                           width=self._destinationRect.width, height=self._destinationRect.height)
 
         options: OrthogonalConnectorOptions = OrthogonalConnectorOptions()
 

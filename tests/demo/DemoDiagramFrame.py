@@ -8,7 +8,6 @@ from wx import BLACK_PEN
 from wx import Bitmap
 from wx import Brush
 from wx import Colour
-from wx import DC
 from wx import EVT_PAINT
 from wx import MemoryDC
 from wx import PENSTYLE_LONG_DASH
@@ -88,6 +87,9 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
     @orthogonalConnectorAdapter.setter
     def orthogonalConnectorAdapter(self, newValue: OrthogonalConnectorAdapter):
+
+        self._shapes.append(newValue.sourceShape)
+        self._shapes.append(newValue.destinationShape)
         self._orthogonalConnectorAdapter = newValue
 
     # noinspection PyUnusedLocal
@@ -186,20 +188,11 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
         dc.SetBrush(Brush(DemoColorEnum.toWxColor(DemoColorEnum.ALICE_BLUE)))
 
-        self._drawShape(dc, sourceShape)
-        self._drawShape(dc, destinationShape)
+        sourceShape.draw(dc=dc)
+        destinationShape.draw(dc=dc)
 
         dc.SetPen(savePen)
         dc.SetBrush(saveBrush)
-
-    def _drawShape(self, dc: MemoryDC, demoShape: DemoShape):
-
-        x:      int = demoShape.left
-        y:      int = demoShape.top
-        width:  int = demoShape.width
-        height: int = demoShape.height
-
-        dc.DrawRoundedRectangle(x=x, y=y, width=width, height=height, radius=8.0)
 
     def _drawPath(self, dc: MemoryDC):
 

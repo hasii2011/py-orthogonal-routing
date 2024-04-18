@@ -1,6 +1,8 @@
 
 from logging import Logger
 from logging import getLogger
+from typing import Tuple
+from typing import cast
 
 from wx import BLACK
 from wx import BLACK_PEN
@@ -8,12 +10,16 @@ from wx import Bitmap
 from wx import Brush
 from wx import Colour
 from wx import DC
+from wx import EVT_LEFT_DOWN
+from wx import EVT_LEFT_UP
+from wx import EVT_MOTION
 from wx import FONTFAMILY_SWISS
 from wx import FONTSTYLE_NORMAL
 from wx import FONTWEIGHT_BOLD
 from wx import FONTWEIGHT_NORMAL
 from wx import Font
 from wx import LIGHT_GREY
+from wx import MouseEvent
 from wx import PENSTYLE_DOT
 from wx import Pen
 from wx import PenInfo
@@ -26,6 +32,9 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
+from tests.demo.BaseShape import BaseShape
+from tests.demo.BaseShape import BaseShapes
+
 DEFAULT_WIDTH = 6000
 A4_FACTOR:    float = 1.41
 
@@ -37,6 +46,8 @@ DEFAULT_PEN:       Pen   = BLACK_PEN
 DEFAULT_BRUSH:     Brush = WHITE_BRUSH
 DEFAULT_FONT_SIZE: int = 10
 
+NO_SHAPE: BaseShape = cast(BaseShape, None)
+
 
 class BaseDiagramFrame(ScrolledWindow):
 
@@ -44,16 +55,12 @@ class BaseDiagramFrame(ScrolledWindow):
 
         super().__init__(parent)
 
-        self.logger: Logger = getLogger(__name__)
+        self._baseLogger: Logger = getLogger(__name__)
 
         self.maxWidth:  int  = DEFAULT_WIDTH
         self.maxHeight: int = int(self.maxWidth / A4_FACTOR)  # 1.41 is for A4 support
 
-        nbrUnitsX: int = int(self.maxWidth / PIXELS_PER_UNIT_X)
-        nbrUnitsY: int = int(self.maxHeight / PIXELS_PER_UNIT_Y)
-        initPosX:  int = 0
-        initPosY:  int = 0
-        self.SetScrollbars(PIXELS_PER_UNIT_X, PIXELS_PER_UNIT_Y, nbrUnitsX, nbrUnitsY, initPosX, initPosY, False)
+        self._setupScrollBars()
 
         # paint related
         w, h = self.GetSize()
@@ -68,6 +75,106 @@ class BaseDiagramFrame(ScrolledWindow):
         self._textColor:   Colour = BLACK
         self._defaultFont: Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
         self._nameFont:    Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
+
+        self._shapes:         BaseShapes = BaseShapes([])
+
+        self._lastMousePosition: Tuple[int, int] = cast(Tuple[int, int], None)
+
+        self.Bind(EVT_LEFT_DOWN, self._onLeftDown)
+        self.Bind(EVT_LEFT_UP,   self._onLeftUp)
+
+    def _eventDelegator(self, event: MouseEvent, methodName: str) -> BaseShape:
+        """
+        This handler finds the shape at the event coordinates and dispatches the event.
+        The handler will receive an event with coordinates already scrolled.
+
+        Args:
+            event:      The original event
+            methodName: Name of the method to invoke in the event handler of the shape
+
+        Returns:  The clicked shape
+        """
+        from tests.demo.DemoShape import DemoShape
+        x, y = self._getEventPosition(event)
+
+        shape: BaseShape = self._findShape(x, y)
+
+        event.m_x, event.m_y = x, y
+
+        if shape is not None and isinstance(shape, BaseShape):
+            self._baseLogger.info(f'_eventDelegator - `{cast(DemoShape, shape).identifier=}` `{methodName=}` x,y: {x},{y}')
+            getattr(shape, methodName)(event)
+        else:
+            event.Skip()
+
+        return shape
+
+    def _onLeftDown(self, event: MouseEvent):
+
+        shape: BaseShape = self._eventDelegator(event, "onLeftDown")
+        # # clicked on Canvas; clear selections
+        if shape is None:
+            self._baseLogger.info('Clicked on canvas')
+            for s in self._shapes:
+                s.selected = False
+        else:
+            for s in self._shapes:
+                s.selected = False
+            shape.selected = True
+            if not event.GetSkipped():
+                self._baseLogger.info(f'{event.GetSkipped()=}')
+                return
+
+            # Manage click and drag
+            x, y = event.GetX(), event.GetY()
+            self._lastMousePosition = (x, y)
+
+            self.Bind(EVT_MOTION, self._onDrag)
+        self.Refresh()
+
+    def _onLeftUp(self, event: MouseEvent):
+
+        # noinspection PyUnusedLocal
+        shape = self._eventDelegator(event, "onLeftUp")
+        self._moving = False
+        self._lastMousePosition = cast(Tuple[int, int], None)
+        self.Unbind(EVT_MOTION)
+
+    def _onMove(self, event: MouseEvent):
+        event.m_x, event.m_y = self._getEventPosition(event)
+        self._onDrag(event)
+
+    def _onDrag(self, event: MouseEvent):
+        """
+        Callback to drag the selected shapes.
+
+        Args:
+            event:
+        """
+        from tests.demo.DemoShape import DemoShape
+
+        x, y = event.GetX(), event.GetY()
+
+        self._baseLogger.debug(f'({x},{y})')
+
+        for s in self._shapes:
+
+            shape: DemoShape = cast(DemoShape, s)
+            if shape.selected is True:
+                ox, oy = self._lastMousePosition    # old position
+                dx, dy = x - ox, y - oy             # delta from current
+                # sx, sy = shape.GetPosition()
+                sx, sy = shape.position
+
+                newX: int = sx + dx
+                newY: int = sy + dy
+                self._baseLogger.info(f'New drag position {shape.identifier=} ({newX},{newY})')
+                shape.position = newX, newY
+                self._lastMousePosition = (x, y)
+
+        self.Refresh(False)
+
+        self._clickedShape = cast(BaseShape, None)
 
     def _drawGrid(self, memDC: DC, width: int, height: int, startX: int, startY: int):
 
@@ -121,3 +228,52 @@ class BaseDiagramFrame(ScrolledWindow):
         centeredPoint: Point = Point(x=x - (width // 2), y=y - (height // 2))
 
         return centeredPoint
+
+    def _getEventPosition(self, event: MouseEvent):
+        """
+        Return the position of a click in the diagram.
+        Args:
+            event:   The mouse event
+
+        Returns: A tuple with x,y coordinates
+        """
+        x, y = self._convertEventCoordinates(event)
+        return x, y
+
+    def _convertEventCoordinates(self, event):
+
+        xView, yView = self.GetViewStart()
+        xDelta, yDelta = self.GetScrollPixelsPerUnit()
+        return event.GetX() + (xView * xDelta), event.GetY() + (yView * yDelta)
+
+    def _findShape(self, x: int, y: int):
+        """
+        Return the shape at (x, y).
+
+        Args:
+            x: coordinate
+            y: coordinate
+
+        Returns:  The shape that was found under the coordinates or None
+        """
+        self._baseLogger.debug(f'FindShape: @{x},{y}')
+        found:  BaseShape  = cast(BaseShape, None)
+        shapes: BaseShapes = self._shapes
+
+        shapes.reverse()    # to select the one at the top
+
+        for shape in shapes:
+            if shape.inside(x, y):
+                self._baseLogger.debug(f"Inside: {shape}")
+                found = shape
+                break   # only select the first one
+        return found
+
+    def _setupScrollBars(self):
+
+        nbrUnitsX: int = int(self.maxWidth / PIXELS_PER_UNIT_X)
+        nbrUnitsY: int = int(self.maxHeight / PIXELS_PER_UNIT_Y)
+        initPosX:  int = 0
+        initPosY:  int = 0
+
+        self.SetScrollbars(PIXELS_PER_UNIT_X, PIXELS_PER_UNIT_Y, nbrUnitsX, nbrUnitsY, initPosX, initPosY, False)
