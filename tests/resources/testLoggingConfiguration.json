@@ -42,6 +42,11 @@
             "level":     "INFO",
             "propagate": "False"
         },
+        "tests.demo.DiagramChangedHandler": {
+            "level":     "INFO",
+            "propagate": "False"
+        },
+
         "codeallybasic.UnitTestBase": {
             "level":     "INFO",
             "propagate": "False"

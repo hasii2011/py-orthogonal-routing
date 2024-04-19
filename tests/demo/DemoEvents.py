@@ -11,6 +11,11 @@ ShowMainGridEvent,        EVT_SHOW_MAIN_GRID        = NewEvent()
 ShowReferencePointsEvent, EVT_SHOW_REFERENCE_POINTS = NewEvent()
 ShowRouteGridEvent,       EVT_SHOW_ROUTE_GRID       = NewEvent()
 
+ConnectionPositionChangedEvent, EVT_CONNECTION_POSITION_CHANGED = NewEvent()
+ShapeMovedEvent,                EVT_SHAPE_MOVED                 = NewEvent()
+
+RefreshFrameEvent,              EVT_REFRESH_FRAME               = NewEvent()
+
 
 class DemoEventType(Enum):
 
@@ -19,7 +24,9 @@ class DemoEventType(Enum):
     SHOW_REFERENCE_POINTS = 'ShowReferencePoints'
     SHOW_ROUTE_GRID       = 'ShowRouteGrid'
 
-    SOURCE_CONNECTION_POSITION_CHANGED      = 'SourceConnectionPositionChanged'
-    DESTINATION_CONNECTION_POSITION_CHANGED = 'DestinationConnectionPositionChanged'
+    CONNECTION_POSITION_CHANGED = 'ConnectionPositionChanged'
+    SHAPED_MOVED                = 'ShapedMoved'
+
+    REFRESH_FRAME               = 'RefreshFrame'
 
     NOT_SET = 'Not Set'

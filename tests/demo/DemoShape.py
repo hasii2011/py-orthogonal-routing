@@ -41,5 +41,23 @@ class DemoShape(BaseShape):
     def identifier(self) -> int:
         return self._identifier
 
+    def __eq__(self, other) -> bool:
 
-Shapes = NewType('Shapes', List[DemoShape])
+        ans: bool = False
+        if isinstance(other, DemoShape) is False:
+            pass
+        else:
+            if self.identifier == other.identifier:
+                ans = True
+
+        return ans
+
+    def __str__(self) -> str:
+
+        baseStr: str = super().__str__()
+        ourStr:  str = f'identifier={self.identifier} {baseStr}'
+
+        return ourStr
+
+
+DemoShapes = NewType('DemoShapes', List[DemoShape])

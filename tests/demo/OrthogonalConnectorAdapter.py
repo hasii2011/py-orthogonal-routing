@@ -30,10 +30,10 @@ class OrthogonalConnectorAdapter:
 
         self._byProducts:   OrthogonalConnectorByProduct = cast(OrthogonalConnectorByProduct, None)
         self._path:         Points                       = cast(Points, None)
-        self._globalBounds: Rect                         = cast(Rect, None)
 
-        self._sourceShape:      DemoShape = cast(DemoShape, None)
-        self._destinationShape: DemoShape = cast(DemoShape, None)
+        self._options:          OrthogonalConnectorOptions = cast(OrthogonalConnectorOptions, None)
+        self._sourceShape:      DemoShape                  = cast(DemoShape, None)
+        self._destinationShape: DemoShape                  = cast(DemoShape, None)
 
     @property
     def sourceShape(self) -> DemoShape:
@@ -64,8 +64,13 @@ class OrthogonalConnectorAdapter:
     def vRulers(self) -> Integers:
         return self._byProducts.vRulers
 
+    @property
     def globalBounds(self) -> Rect:
-        return self._globalBounds
+        return self._options.globalBounds
+
+    @property
+    def options(self) -> OrthogonalConnectorOptions:
+        return self._options
 
     def runDefaultDemo(self):
 
@@ -80,13 +85,21 @@ class OrthogonalConnectorAdapter:
 
         options: OrthogonalConnectorOptions = OrthogonalConnectorOptions()
 
-        options.pointA = ConnectorPoint(shape=self._sourceRect, side=Side.BOTTOM, distance=0.5)
-        options.pointB = ConnectorPoint(shape=self._destinationRect, side=Side.RIGHT,  distance=0.5)
-        options.shapeMargin        = 10
-        options.globalBoundsMargin = 10
+        options.shapeMargin        = 20
+        options.globalBoundsMargin = 50
         options.globalBounds       = Rect(left=0, top=0, width=500, height=500)
 
-        self._globalBounds = options.globalBounds
-        self._path = OrthogonalConnector.route(options=options)
+        self.runConnector(options=options,
+                          sourceConnectorPoint=ConnectorPoint(shape=self._sourceRect, side=Side.BOTTOM, distance=0.5),
+                          destinationConnectorPoint=ConnectorPoint(shape=self._destinationRect, side=Side.RIGHT,  distance=0.5)
+                          )
+
+    def runConnector(self, sourceConnectorPoint: ConnectorPoint, destinationConnectorPoint: ConnectorPoint, options: OrthogonalConnectorOptions):
+
+        options.pointA = sourceConnectorPoint
+        options.pointB = destinationConnectorPoint
+
+        self._options = options
+        self._path    = OrthogonalConnector.route(options=options)
 
         self._byProducts = OrthogonalConnector.byProduct

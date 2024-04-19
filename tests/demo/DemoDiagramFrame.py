@@ -28,21 +28,26 @@ from pyorthogonalrouting.Point import Points
 from pyorthogonalrouting.Rectangle import Rectangle
 from pyorthogonalrouting.Rectangle import Rectangles
 from pyorthogonalrouting.Rect import Rect as OrthoRect
+
+from tests.demo.IEventEngine import IEventEngine
+
+from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
+
 from tests.demo.BaseDiagramFrame import BaseDiagramFrame
+from tests.demo.BaseShape import BaseShape
+from tests.demo.DemoShape import DemoShape
 
 from tests.demo.DemoColorEnum import DemoColorEnum
 
+from tests.demo.DemoEvents import DemoEventType
+from tests.demo.DemoEvents import EVT_REFRESH_FRAME
 from tests.demo.DemoEvents import EVT_SHOW_REFERENCE_POINTS
 from tests.demo.DemoEvents import EVT_SHOW_ROUTE_GRID
 from tests.demo.DemoEvents import EVT_SHOW_RULERS
+from tests.demo.DemoEvents import RefreshFrameEvent
 from tests.demo.DemoEvents import ShowReferencePointsEvent
 from tests.demo.DemoEvents import ShowRouteGridEvent
 from tests.demo.DemoEvents import ShowRulersEvent
-from tests.demo.IEventEngine import IEventEngine
-
-from tests.demo.DemoShape import DemoShape
-
-from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 
 REFERENCE_POINT_WIDTH:  int = 8
@@ -65,6 +70,9 @@ class DemoDiagramFrame(BaseDiagramFrame):
         self._showRouteGrid:       bool = False
         self._showRulers:          bool = False
 
+        self._sourceShape:      DemoShape = cast(DemoShape, None)   # For reference
+        self._destinationShape: DemoShape = cast(DemoShape, None)
+
         self.Bind(EVT_PAINT, self.onPaint)
 
     @property
@@ -80,6 +88,7 @@ class DemoDiagramFrame(BaseDiagramFrame):
         self._eventEngine.registerListener(EVT_SHOW_REFERENCE_POINTS, self._onShowReferencePointsToggled)
         self._eventEngine.registerListener(EVT_SHOW_ROUTE_GRID,       self._onShowRouteGridToggled)
         self._eventEngine.registerListener(EVT_SHOW_RULERS,           self._onShowRulersToggled)
+        self._eventEngine.registerListener(EVT_REFRESH_FRAME,         self._onRefreshFrame)
 
     @property
     def orthogonalConnectorAdapter(self) -> OrthogonalConnectorAdapter:
@@ -88,9 +97,29 @@ class DemoDiagramFrame(BaseDiagramFrame):
     @orthogonalConnectorAdapter.setter
     def orthogonalConnectorAdapter(self, newValue: OrthogonalConnectorAdapter):
 
+        self._sourceShape      = newValue.sourceShape
+        self._destinationShape = newValue.destinationShape
+
         self._shapes.append(newValue.sourceShape)
         self._shapes.append(newValue.destinationShape)
         self._orthogonalConnectorAdapter = newValue
+
+    def _shapedMoved(self, shape: BaseShape):
+        """
+
+        Args:
+            shape:
+        """
+        demoShape: DemoShape = cast(DemoShape, shape)
+
+        if demoShape == self._sourceShape:
+            which: str = 'source'
+        elif demoShape == self._destinationShape:
+            which = 'destination'
+        else:
+            assert False, 'It has to be one or the other'
+
+        self._eventEngine.sendEvent(DemoEventType.SHAPED_MOVED, shape=demoShape, which=which)
 
     # noinspection PyUnusedLocal
     def Refresh(self, eraseBackground: bool = True, rect: Rect = None):
@@ -139,6 +168,10 @@ class DemoDiagramFrame(BaseDiagramFrame):
     def _onShowRulersToggled(self, event: ShowRulersEvent):
 
         self._showRulers = event.showRulers
+        self.Refresh()
+
+    # noinspection PyUnusedLocal
+    def _onRefreshFrame(self, event: RefreshFrameEvent):
         self.Refresh()
 
     def createDC(self, w: int, h: int) -> MemoryDC:
@@ -258,7 +291,7 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
         horizontalRulers: Integers  = self._orthogonalConnectorAdapter.hRulers
         verticalRulers:   Integers  = self._orthogonalConnectorAdapter.vRulers
-        globalBounds:     OrthoRect = self._orthogonalConnectorAdapter.globalBounds()
+        globalBounds:     OrthoRect = self._orthogonalConnectorAdapter.globalBounds
 
         for y in horizontalRulers:
             dc.DrawLine(x1=0, y1=y, x2=globalBounds.width, y2=y)

@@ -9,9 +9,12 @@ from wx import PyEventBinder
 from wx import Window
 
 from tests.demo.DemoEvents import DemoEventType
+from tests.demo.DemoEvents import RefreshFrameEvent
+from tests.demo.DemoEvents import ShapeMovedEvent
 from tests.demo.DemoEvents import ShowReferencePointsEvent
 from tests.demo.DemoEvents import ShowRouteGridEvent
 from tests.demo.DemoEvents import ShowRulersEvent
+from tests.demo.DemoShape import DemoShape
 from tests.demo.IEventEngine import IEventEngine
 
 
@@ -22,6 +25,8 @@ class InvalidKeywordException(Exception):
 SHOW_REFERENCE_POINTS_PARAMETER: str = 'showReferencePoints'
 SHOW_ROUTE_GRID_PARAMETER:       str = 'showRouteGrid'
 SHOW_RULERS_PARAMETER:           str = 'showRulers'
+SHAPE_PARAMETER:                 str = 'shape'
+WHICH_PARAMETER:                 str = 'which'
 
 
 class DemoEventEngine(IEventEngine):
@@ -44,6 +49,10 @@ class DemoEventEngine(IEventEngine):
                     self._sendShowRouteGridEvent(**kwargs)
                 case DemoEventType.SHOW_RULERS:
                     self._sendShowRulersEvent(**kwargs)
+                case DemoEventType.SHAPED_MOVED:
+                    self._sendShapeMovedEvent(**kwargs)
+                case DemoEventType.REFRESH_FRAME:
+                    self._sendRefreshFrameEvent(**kwargs)
                 case _:
                     self.logger.warning(f'Unknown Ogl Event Type: {eventType}')
         except KeyError as ke:
@@ -66,4 +75,17 @@ class DemoEventEngine(IEventEngine):
 
         show:  bool            = kwargs[SHOW_RULERS_PARAMETER]
         event: ShowRulersEvent = ShowRulersEvent(showRulers=show)
+        PostEvent(dest=self._listeningWindow, event=event)
+
+    def _sendShapeMovedEvent(self, **kwargs):
+
+        shape: DemoShape       = kwargs[SHAPE_PARAMETER]
+        which: str             = kwargs[WHICH_PARAMETER]
+
+        event: ShapeMovedEvent = ShapeMovedEvent(shape=shape, which=which)
+        PostEvent(dest=self._listeningWindow, event=event)
+
+    def _sendRefreshFrameEvent(self, **kwargs):
+
+        event: RefreshFrameEvent = RefreshFrameEvent()
         PostEvent(dest=self._listeningWindow, event=event)

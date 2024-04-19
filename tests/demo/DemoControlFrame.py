@@ -51,7 +51,7 @@ class DemoControlFrame(SizedPanel):
 
     @property
     def eventEngine(self):
-        return
+        raise AttributeError("Cannot access write-only attribute")
 
     @eventEngine.setter
     def eventEngine(self, eventEngine: IEventEngine):

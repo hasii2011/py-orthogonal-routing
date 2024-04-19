@@ -1,8 +1,10 @@
 
-from logging import Logger
-from logging import getLogger
+from typing import NewType
 from typing import Tuple
 from typing import cast
+
+from logging import Logger
+from logging import getLogger
 
 from wx import BLACK
 from wx import BLACK_PEN
@@ -48,6 +50,10 @@ DEFAULT_FONT_SIZE: int = 10
 
 NO_SHAPE: BaseShape = cast(BaseShape, None)
 
+MousePosition = NewType('MousePosition', Tuple[int, int])
+
+NO_MOUSE_POSITION = cast(MousePosition, None)
+
 
 class BaseDiagramFrame(ScrolledWindow):
 
@@ -78,10 +84,20 @@ class BaseDiagramFrame(ScrolledWindow):
 
         self._shapes:         BaseShapes = BaseShapes([])
 
-        self._lastMousePosition: Tuple[int, int] = cast(Tuple[int, int], None)
+        self._lastMousePosition: MousePosition = NO_MOUSE_POSITION
 
         self.Bind(EVT_LEFT_DOWN, self._onLeftDown)
         self.Bind(EVT_LEFT_UP,   self._onLeftUp)
+
+    # noinspection PyUnusedLocal
+    def _shapedMoved(self, shape: BaseShape):
+        """
+        Superclass needs to implement this;
+
+        Args:
+            shape:
+        """
+        assert False, 'The superclass needs to implement this'
 
     def _eventDelegator(self, event: MouseEvent, methodName: str) -> BaseShape:
         """
@@ -102,7 +118,7 @@ class BaseDiagramFrame(ScrolledWindow):
         event.m_x, event.m_y = x, y
 
         if shape is not None and isinstance(shape, BaseShape):
-            self._baseLogger.info(f'_eventDelegator - `{cast(DemoShape, shape).identifier=}` `{methodName=}` x,y: {x},{y}')
+            self._baseLogger.debug(f'_eventDelegator - `{cast(DemoShape, shape).identifier=}` `{methodName=}` x,y: {x},{y}')
             getattr(shape, methodName)(event)
         else:
             event.Skip()
@@ -127,17 +143,19 @@ class BaseDiagramFrame(ScrolledWindow):
 
             # Manage click and drag
             x, y = event.GetX(), event.GetY()
-            self._lastMousePosition = (x, y)
+            self._lastMousePosition = MousePosition((x, y))
 
             self.Bind(EVT_MOTION, self._onDrag)
         self.Refresh()
 
     def _onLeftUp(self, event: MouseEvent):
 
-        # noinspection PyUnusedLocal
         shape = self._eventDelegator(event, "onLeftUp")
+        if shape is not None:
+            self._shapedMoved(shape)
+
         self._moving = False
-        self._lastMousePosition = cast(Tuple[int, int], None)
+        self._lastMousePosition = NO_MOUSE_POSITION
         self.Unbind(EVT_MOTION)
 
     def _onMove(self, event: MouseEvent):
@@ -168,9 +186,9 @@ class BaseDiagramFrame(ScrolledWindow):
 
                 newX: int = sx + dx
                 newY: int = sy + dy
-                self._baseLogger.info(f'New drag position {shape.identifier=} ({newX},{newY})')
+                self._baseLogger.debug(f'New drag position {shape.identifier=} ({newX},{newY})')
                 shape.position = newX, newY
-                self._lastMousePosition = (x, y)
+                self._lastMousePosition = MousePosition((x, y))
 
         self.Refresh(False)
 
