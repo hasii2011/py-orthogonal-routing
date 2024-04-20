@@ -10,7 +10,6 @@ from wx import DC
 from wx import Pen
 from wx import RED_PEN
 
-from pyorthogonalrouting.Size import Size
 from tests.demo.BaseShape import BaseShape
 from tests.demo.DemoSelectorShape import DemoSelectorShape
 from tests.demo.DemoSelectorShape import DemoSelectorShapes
@@ -72,22 +71,22 @@ class DemoShape(BaseShape):
 
     def _createSelectors(self):
 
-        shapeSize: Size = self.size
+        width, height = self.size
 
-        x: int = shapeSize.width // 2
+        x: int = width // 2
         y: int = 0
         self._northSelector = DemoSelectorShape(parent=self, x=x, y=y)
 
-        x = shapeSize.width // 2
-        y = shapeSize.height
+        x = width // 2
+        y = height
         self._southSelector = DemoSelectorShape(parent=self, x=x, y=y)
 
-        x = shapeSize.width
-        y = shapeSize.height // 2
+        x = width
+        y = height // 2
         self._eastSelector = DemoSelectorShape(parent=self, x=x, y=y)
 
         x = 0
-        y = shapeSize.height // 2
+        y = height // 2
         self._westSelector = DemoSelectorShape(parent=self, x=x, y=y)
 
     def __eq__(self, other) -> bool:

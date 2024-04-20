@@ -1,24 +1,26 @@
 
 from typing import List
 from typing import NewType
+from typing import Tuple
 
 from logging import Logger
 from logging import getLogger
-from typing import Tuple
-
-from pyorthogonalrouting.Point import Point
-from pyorthogonalrouting.Rectangle import Rectangle
 
 from tests.demo.ShapeEventHandler import ShapeEventHandler
 
 
-class BaseShape(Rectangle, ShapeEventHandler):
+class BaseShape(ShapeEventHandler):
 
     def __init__(self, left: int, top: int, width: int, height: int):
 
-        super().__init__(left, top, width, height)
+        super().__init__()
 
         self._baseLogger: Logger = getLogger(__name__)
+
+        self._left:   int = left
+        self._top:    int = top
+        self._width:  int = width
+        self._height: int = height
 
         self.selected: bool = False
 
@@ -30,6 +32,34 @@ class BaseShape(Rectangle, ShapeEventHandler):
     def position(self, value: Tuple[int, int]):
         self._left = value[0]
         self._top  = value[1]
+
+    @property
+    def bottom(self) -> int:
+        return self._top + self._height
+
+    @property
+    def left(self) -> int:
+        return self._left
+
+    @property
+    def top(self) -> int:
+        return self._top
+
+    @property
+    def right(self) -> int:
+        return self._left + self._width
+
+    @property
+    def width(self) -> int:
+        return self._width
+
+    @property
+    def height(self) -> int:
+        return self._height
+
+    @property
+    def size(self) -> Tuple[int, int]:
+        return self._width, self._height
 
     @property
     def selected(self) -> bool:
@@ -49,7 +79,11 @@ class BaseShape(Rectangle, ShapeEventHandler):
 
         Returns:  True if (x, y) is inside the rectangle.
         """
-        return self.contains(p=Point(x=x, y=y))
+        return self.contains(x=x, y=y)
+
+    # noinspection PyChainedComparisons
+    def contains(self, x: int, y: int) -> bool:
+        return x >= self._left and x <= self.right and y >= self._top and y <= self.bottom
 
 
 BaseShapes = NewType('BaseShapes', List[BaseShape])
