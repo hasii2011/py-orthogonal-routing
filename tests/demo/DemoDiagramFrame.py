@@ -102,6 +102,13 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
         self._shapes.append(newValue.sourceShape)
         self._shapes.append(newValue.destinationShape)
+
+        for selector in self._sourceShape.selectors:
+            self._shapes.append(selector)
+
+        for selector in self._destinationShape.selectors:
+            self._shapes.append(selector)
+
         self._orthogonalConnectorAdapter = newValue
 
     def _shapedMoved(self, shape: BaseShape):

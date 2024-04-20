@@ -1,8 +1,9 @@
 
-from logging import Logger
-from logging import getLogger
 from typing import List
 from typing import NewType
+
+from logging import Logger
+from logging import getLogger
 
 from wx import DC
 from wx import Pen
@@ -34,6 +35,9 @@ class DemoShape(BaseShape):
         if self.selected is True:
             dc.SetPen(RED_PEN)
         dc.DrawRoundedRectangle(x=self.left, y=self.top, width=self.width, height=self.height, radius=ROUNDED_RECTANGLE_RADIUS)
+
+        if self.selected is True:
+            self.drawSelectors(dc=dc)
 
         dc.SetPen(savePen)
 

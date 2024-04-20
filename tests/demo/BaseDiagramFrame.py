@@ -36,6 +36,8 @@ from wx.core import PenStyle
 
 from tests.demo.BaseShape import BaseShape
 from tests.demo.BaseShape import BaseShapes
+from tests.demo.ShapeEventHandler import ShapeEventHandler
+from tests.demo.ShapeEventHandler import ShapeEventHandlers
 
 DEFAULT_WIDTH = 6000
 A4_FACTOR:    float = 1.41
@@ -82,7 +84,7 @@ class BaseDiagramFrame(ScrolledWindow):
         self._defaultFont: Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
         self._nameFont:    Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
 
-        self._shapes:         BaseShapes = BaseShapes([])
+        self._shapes:         ShapeEventHandlers = ShapeEventHandlers([])
 
         self._lastMousePosition: MousePosition = NO_MOUSE_POSITION
 
@@ -131,21 +133,25 @@ class BaseDiagramFrame(ScrolledWindow):
         # # clicked on Canvas; clear selections
         if shape is None:
             self._baseLogger.info('Clicked on canvas')
-            for s in self._shapes:
-                s.selected = False
+            # for s in self._shapes:
+            #     if isinstance(s, BaseShape):
+            #         cast(BaseShape, s).selected = False
+            self._deselectAll()
         else:
-            for s in self._shapes:
-                s.selected = False
-            shape.selected = True
-            if not event.GetSkipped():
-                self._baseLogger.info(f'{event.GetSkipped()=}')
-                return
+            # for s in self._shapes:
+            #     s.selected = False
+            self._deselectAll()
+            if isinstance(shape, BaseShape):
+                shape.selected = True
+                if not event.GetSkipped():
+                    self._baseLogger.info(f'{event.GetSkipped()=}')
+                    return
 
-            # Manage click and drag
-            x, y = event.GetX(), event.GetY()
-            self._lastMousePosition = MousePosition((x, y))
+                # Manage click and drag
+                x, y = event.GetX(), event.GetY()
+                self._lastMousePosition = MousePosition((x, y))
 
-            self.Bind(EVT_MOTION, self._onDrag)
+                self.Bind(EVT_MOTION, self._onDrag)
         self.Refresh()
 
     def _onLeftUp(self, event: MouseEvent):
@@ -177,18 +183,19 @@ class BaseDiagramFrame(ScrolledWindow):
 
         for s in self._shapes:
 
-            shape: DemoShape = cast(DemoShape, s)
-            if shape.selected is True:
-                ox, oy = self._lastMousePosition    # old position
-                dx, dy = x - ox, y - oy             # delta from current
-                # sx, sy = shape.GetPosition()
-                sx, sy = shape.position
+            if isinstance(s, DemoShape):
+                shape: DemoShape = cast(DemoShape, s)
+                if shape.selected is True:
+                    ox, oy = self._lastMousePosition    # old position
+                    dx, dy = x - ox, y - oy             # delta from current
+                    # sx, sy = shape.GetPosition()
+                    sx, sy = shape.position
 
-                newX: int = sx + dx
-                newY: int = sy + dy
-                self._baseLogger.debug(f'New drag position {shape.identifier=} ({newX},{newY})')
-                shape.position = newX, newY
-                self._lastMousePosition = MousePosition((x, y))
+                    newX: int = sx + dx
+                    newY: int = sy + dy
+                    self._baseLogger.debug(f'New drag position {shape.identifier=} ({newX},{newY})')
+                    shape.position = newX, newY
+                    self._lastMousePosition = MousePosition((x, y))
 
         self.Refresh(False)
 
@@ -275,8 +282,8 @@ class BaseDiagramFrame(ScrolledWindow):
         Returns:  The shape that was found under the coordinates or None
         """
         self._baseLogger.debug(f'FindShape: @{x},{y}')
-        found:  BaseShape  = cast(BaseShape, None)
-        shapes: BaseShapes = self._shapes
+        found:  ShapeEventHandler  = cast(ShapeEventHandler, None)
+        shapes: ShapeEventHandlers = self._shapes
 
         shapes.reverse()    # to select the one at the top
 
@@ -286,6 +293,12 @@ class BaseDiagramFrame(ScrolledWindow):
                 found = shape
                 break   # only select the first one
         return found
+
+    def _deselectAll(self):
+
+        for s in self._shapes:
+            if isinstance(s, BaseShape):
+                cast(BaseShape, s).selected = False
 
     def _setupScrollBars(self):
 
