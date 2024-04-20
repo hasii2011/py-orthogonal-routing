@@ -35,7 +35,6 @@ from wx import Window
 from wx.core import PenStyle
 
 from tests.demo.BaseShape import BaseShape
-from tests.demo.BaseShape import BaseShapes
 from tests.demo.ShapeEventHandler import ShapeEventHandler
 from tests.demo.ShapeEventHandler import ShapeEventHandlers
 
@@ -117,7 +116,7 @@ class BaseDiagramFrame(ScrolledWindow):
 
         shape: BaseShape = self._findShape(x, y)
 
-        event.m_x, event.m_y = x, y
+        # event.m_x, event.m_y = x, y
 
         if shape is not None and isinstance(shape, BaseShape):
             self._baseLogger.debug(f'_eventDelegator - `{cast(DemoShape, shape).identifier=}` `{methodName=}` x,y: {x},{y}')

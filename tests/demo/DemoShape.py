@@ -1,6 +1,7 @@
 
 from typing import List
 from typing import NewType
+from typing import cast
 
 from logging import Logger
 from logging import getLogger
@@ -9,7 +10,10 @@ from wx import DC
 from wx import Pen
 from wx import RED_PEN
 
+from pyorthogonalrouting.Size import Size
 from tests.demo.BaseShape import BaseShape
+from tests.demo.DemoSelectorShape import DemoSelectorShape
+from tests.demo.DemoSelectorShape import DemoSelectorShapes
 
 ROUNDED_RECTANGLE_RADIUS: int = 8
 
@@ -28,6 +32,21 @@ class DemoShape(BaseShape):
 
         DemoShape.nextId += 1
 
+        self._northSelector: DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._southSelector: DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._eastSelector:  DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._westSelector:  DemoSelectorShape = cast(DemoSelectorShape, None)
+
+        self._createSelectors()
+
+        self._selectorShapes: DemoSelectorShapes = DemoSelectorShapes([
+            self._northSelector, self._southSelector, self._eastSelector, self._westSelector
+        ])
+
+    @property
+    def identifier(self) -> int:
+        return self._identifier
+
     def draw(self, dc: DC):
 
         savePen: Pen = dc.GetPen()
@@ -37,13 +56,39 @@ class DemoShape(BaseShape):
         dc.DrawRoundedRectangle(x=self.left, y=self.top, width=self.width, height=self.height, radius=ROUNDED_RECTANGLE_RADIUS)
 
         if self.selected is True:
-            self.drawSelectors(dc=dc)
+            self._drawSelectors(dc=dc)
 
         dc.SetPen(savePen)
 
     @property
-    def identifier(self) -> int:
-        return self._identifier
+    def selectors(self) -> DemoSelectorShapes:
+        return self._selectorShapes
+
+    def _drawSelectors(self, dc: DC):
+        self._northSelector.draw(dc=dc)
+        self._southSelector.draw(dc=dc)
+        self._eastSelector.draw(dc=dc)
+        self._westSelector.draw(dc=dc)
+
+    def _createSelectors(self):
+
+        shapeSize: Size = self.size
+
+        x: int = shapeSize.width // 2
+        y: int = 0
+        self._northSelector = DemoSelectorShape(parent=self, x=x, y=y)
+
+        x = shapeSize.width // 2
+        y = shapeSize.height
+        self._southSelector = DemoSelectorShape(parent=self, x=x, y=y)
+
+        x = shapeSize.width
+        y = shapeSize.height // 2
+        self._eastSelector = DemoSelectorShape(parent=self, x=x, y=y)
+
+        x = 0
+        y = shapeSize.height // 2
+        self._westSelector = DemoSelectorShape(parent=self, x=x, y=y)
 
     def __eq__(self, other) -> bool:
 
