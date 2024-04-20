@@ -34,7 +34,7 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
-from tests.demo.BaseShape import BaseShape
+from tests.demo.RectangleShape import RectangleShape
 from tests.demo.ShapeEventHandler import ShapeEventHandler
 from tests.demo.ShapeEventHandler import ShapeEventHandlers
 
@@ -49,7 +49,7 @@ DEFAULT_PEN:       Pen   = BLACK_PEN
 DEFAULT_BRUSH:     Brush = WHITE_BRUSH
 DEFAULT_FONT_SIZE: int = 10
 
-NO_SHAPE: BaseShape = cast(BaseShape, None)
+NO_SHAPE: RectangleShape = cast(RectangleShape, None)
 
 MousePosition = NewType('MousePosition', Tuple[int, int])
 
@@ -91,7 +91,7 @@ class BaseDiagramFrame(ScrolledWindow):
         self.Bind(EVT_LEFT_UP,   self._onLeftUp)
 
     # noinspection PyUnusedLocal
-    def _shapedMoved(self, shape: BaseShape):
+    def _shapedMoved(self, shape: RectangleShape):
         """
         Superclass needs to implement this;
 
@@ -100,7 +100,7 @@ class BaseDiagramFrame(ScrolledWindow):
         """
         assert False, 'The superclass needs to implement this'
 
-    def _eventDelegator(self, event: MouseEvent, methodName: str) -> BaseShape:
+    def _eventDelegator(self, event: MouseEvent, methodName: str) -> RectangleShape:
         """
         This handler finds the shape at the event coordinates and dispatches the event.
         The handler will receive an event with coordinates already scrolled.
@@ -114,11 +114,11 @@ class BaseDiagramFrame(ScrolledWindow):
         from tests.demo.DemoShape import DemoShape
         x, y = self._getEventPosition(event)
 
-        shape: BaseShape = self._findShape(x, y)
+        shape: RectangleShape = self._findShape(x, y)
 
         # event.m_x, event.m_y = x, y
 
-        if shape is not None and isinstance(shape, BaseShape):
+        if shape is not None and isinstance(shape, RectangleShape):
             self._baseLogger.debug(f'_eventDelegator - `{cast(DemoShape, shape).identifier=}` `{methodName=}` x,y: {x},{y}')
             getattr(shape, methodName)(event)
         else:
@@ -128,7 +128,7 @@ class BaseDiagramFrame(ScrolledWindow):
 
     def _onLeftDown(self, event: MouseEvent):
 
-        shape: BaseShape = self._eventDelegator(event, "onLeftDown")
+        shape: RectangleShape = self._eventDelegator(event, "onLeftDown")
         # # clicked on Canvas; clear selections
         if shape is None:
             self._baseLogger.info('Clicked on canvas')
@@ -140,7 +140,7 @@ class BaseDiagramFrame(ScrolledWindow):
             # for s in self._shapes:
             #     s.selected = False
             self._deselectAll()
-            if isinstance(shape, BaseShape):
+            if isinstance(shape, RectangleShape):
                 shape.selected = True
                 if not event.GetSkipped():
                     self._baseLogger.info(f'{event.GetSkipped()=}')
@@ -198,7 +198,7 @@ class BaseDiagramFrame(ScrolledWindow):
 
         self.Refresh(False)
 
-        self._clickedShape = cast(BaseShape, None)
+        self._clickedShape = cast(RectangleShape, None)
 
     def _drawGrid(self, memDC: DC, width: int, height: int, startX: int, startY: int):
 
@@ -296,8 +296,8 @@ class BaseDiagramFrame(ScrolledWindow):
     def _deselectAll(self):
 
         for s in self._shapes:
-            if isinstance(s, BaseShape):
-                cast(BaseShape, s).selected = False
+            if isinstance(s, RectangleShape):
+                cast(RectangleShape, s).selected = False
 
     def _setupScrollBars(self):
 

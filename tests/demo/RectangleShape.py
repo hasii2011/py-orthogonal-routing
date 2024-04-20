@@ -9,7 +9,7 @@ from logging import getLogger
 from tests.demo.ShapeEventHandler import ShapeEventHandler
 
 
-class BaseShape(ShapeEventHandler):
+class RectangleShape(ShapeEventHandler):
 
     def __init__(self, left: int, top: int, width: int, height: int):
 
@@ -86,4 +86,4 @@ class BaseShape(ShapeEventHandler):
         return x >= self._left and x <= self.right and y >= self._top and y <= self.bottom
 
 
-BaseShapes = NewType('BaseShapes', List[BaseShape])
+BaseShapes = NewType('BaseShapes', List[RectangleShape])

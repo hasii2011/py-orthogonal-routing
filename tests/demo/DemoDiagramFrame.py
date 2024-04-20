@@ -34,7 +34,7 @@ from tests.demo.IEventEngine import IEventEngine
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 from tests.demo.BaseDiagramFrame import BaseDiagramFrame
-from tests.demo.BaseShape import BaseShape
+from tests.demo.RectangleShape import RectangleShape
 from tests.demo.DemoShape import DemoShape
 
 from tests.demo.DemoColorEnum import DemoColorEnum
@@ -111,7 +111,7 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
         self._orthogonalConnectorAdapter = newValue
 
-    def _shapedMoved(self, shape: BaseShape):
+    def _shapedMoved(self, shape: RectangleShape):
         """
 
         Args:

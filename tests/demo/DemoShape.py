@@ -10,14 +10,14 @@ from wx import DC
 from wx import Pen
 from wx import RED_PEN
 
-from tests.demo.BaseShape import BaseShape
+from tests.demo.RectangleShape import RectangleShape
 from tests.demo.DemoSelectorShape import DemoSelectorShape
 from tests.demo.DemoSelectorShape import DemoSelectorShapes
 
 ROUNDED_RECTANGLE_RADIUS: int = 8
 
 
-class DemoShape(BaseShape):
+class DemoShape(RectangleShape):
 
     nextId: int = 0
 

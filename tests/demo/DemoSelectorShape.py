@@ -14,7 +14,7 @@ from tests.demo.DemoColorEnum import DemoColorEnum
 from tests.demo.ShapeEventHandler import ShapeEventHandler
 
 if TYPE_CHECKING:
-    from tests.demo.BaseShape import BaseShape
+    from tests.demo.RectangleShape import RectangleShape
 
 
 class DemoSelectorShape(ShapeEventHandler):
@@ -23,7 +23,7 @@ class DemoSelectorShape(ShapeEventHandler):
     """
     A circle drawn on a shape
     """
-    def __init__(self, parent: 'BaseShape', x: int, y: int):
+    def __init__(self, parent: 'RectangleShape', x: int, y: int):
         """
         x and y are relative to parent
 
@@ -33,7 +33,7 @@ class DemoSelectorShape(ShapeEventHandler):
             y:  y position of the point
         """
         super().__init__()
-        self._parent: 'BaseShape' = parent
+        self._parent: 'RectangleShape' = parent
         self._x:      int = x
         self._y:      int = y
 
