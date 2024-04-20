@@ -34,8 +34,8 @@ from tests.demo.IEventEngine import IEventEngine
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 from tests.demo.BaseDiagramFrame import BaseDiagramFrame
-from tests.demo.RectangleShape import RectangleShape
-from tests.demo.DemoShape import DemoShape
+from tests.demo.shapes.RectangleShape import RectangleShape
+from tests.demo.shapes.DemoShape import DemoShape
 
 from tests.demo.DemoColorEnum import DemoColorEnum
 

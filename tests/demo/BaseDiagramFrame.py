@@ -34,9 +34,9 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
-from tests.demo.RectangleShape import RectangleShape
-from tests.demo.ShapeEventHandler import ShapeEventHandler
-from tests.demo.ShapeEventHandler import ShapeEventHandlers
+from tests.demo.shapes.RectangleShape import RectangleShape
+from tests.demo.shapes.ShapeEventHandler import ShapeEventHandler
+from tests.demo.shapes.ShapeEventHandler import ShapeEventHandlers
 
 DEFAULT_WIDTH = 6000
 A4_FACTOR:    float = 1.41
@@ -111,7 +111,7 @@ class BaseDiagramFrame(ScrolledWindow):
 
         Returns:  The clicked shape
         """
-        from tests.demo.DemoShape import DemoShape
+        from tests.demo.shapes.DemoShape import DemoShape
         x, y = self._getEventPosition(event)
 
         shape: RectangleShape = self._findShape(x, y)
@@ -174,7 +174,7 @@ class BaseDiagramFrame(ScrolledWindow):
         Args:
             event:
         """
-        from tests.demo.DemoShape import DemoShape
+        from tests.demo.shapes.DemoShape import DemoShape
 
         x, y = event.GetX(), event.GetY()
 

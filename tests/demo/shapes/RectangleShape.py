@@ -6,7 +6,7 @@ from typing import Tuple
 from logging import Logger
 from logging import getLogger
 
-from tests.demo.ShapeEventHandler import ShapeEventHandler
+from tests.demo.shapes.ShapeEventHandler import ShapeEventHandler
 
 
 class RectangleShape(ShapeEventHandler):

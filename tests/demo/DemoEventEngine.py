@@ -14,7 +14,8 @@ from tests.demo.DemoEvents import ShapeMovedEvent
 from tests.demo.DemoEvents import ShowReferencePointsEvent
 from tests.demo.DemoEvents import ShowRouteGridEvent
 from tests.demo.DemoEvents import ShowRulersEvent
-from tests.demo.DemoShape import DemoShape
+
+from tests.demo.shapes.DemoShape import DemoShape
 from tests.demo.IEventEngine import IEventEngine
 
 

@@ -16,7 +16,7 @@ from pyorthogonalrouting.Rectangle import Rectangles
 
 from pyorthogonalrouting.enumerations.Side import Side
 
-from tests.demo.DemoShape import DemoShape
+from tests.demo.shapes.DemoShape import DemoShape
 
 
 class OrthogonalConnectorAdapter:

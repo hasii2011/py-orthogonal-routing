@@ -6,11 +6,15 @@ from typing import cast
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
 from pyorthogonalrouting.Rect import Rect
+
 from tests.demo.DemoEvents import DemoEventType
 from tests.demo.DemoEvents import EVT_SHAPE_MOVED
 from tests.demo.DemoEvents import ShapeMovedEvent
-from tests.demo.DemoShape import DemoShape
+
+from tests.demo.shapes.DemoShape import DemoShape
+
 from tests.demo.IEventEngine import IEventEngine
+
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 

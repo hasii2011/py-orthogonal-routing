@@ -10,9 +10,9 @@ from wx import DC
 from wx import Pen
 from wx import RED_PEN
 
-from tests.demo.RectangleShape import RectangleShape
-from tests.demo.DemoSelectorShape import DemoSelectorShape
-from tests.demo.DemoSelectorShape import DemoSelectorShapes
+from tests.demo.shapes.RectangleShape import RectangleShape
+from tests.demo.shapes.DemoSelectorShape import DemoSelectorShape
+from tests.demo.shapes.DemoSelectorShape import DemoSelectorShapes
 
 ROUNDED_RECTANGLE_RADIUS: int = 8
 

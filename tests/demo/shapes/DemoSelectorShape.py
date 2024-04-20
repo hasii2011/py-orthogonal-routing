@@ -11,10 +11,10 @@ from wx import MouseEvent
 from wx import Pen
 
 from tests.demo.DemoColorEnum import DemoColorEnum
-from tests.demo.ShapeEventHandler import ShapeEventHandler
+from tests.demo.shapes.ShapeEventHandler import ShapeEventHandler
 
 if TYPE_CHECKING:
-    from tests.demo.RectangleShape import RectangleShape
+    from tests.demo.shapes.RectangleShape import RectangleShape
 
 
 class DemoSelectorShape(ShapeEventHandler):
