@@ -34,9 +34,12 @@ from wx import Window
 # noinspection PyUnresolvedReferences
 from wx.core import PenStyle
 
+from tests.demo.shapes.BaseShape import BaseShape
+from tests.demo.shapes.BaseShape import BaseShapes
+from tests.demo.shapes.DemoSelectorShape import DemoSelectorShape
+from tests.demo.shapes.DemoShape import DemoShape
 from tests.demo.shapes.RectangleShape import RectangleShape
-from tests.demo.shapes.ShapeEventHandler import ShapeEventHandler
-from tests.demo.shapes.ShapeEventHandler import ShapeEventHandlers
+from tests.demo.shapes.SelectorSide import SelectorSide
 
 DEFAULT_WIDTH = 6000
 A4_FACTOR:    float = 1.41
@@ -83,15 +86,14 @@ class BaseDiagramFrame(ScrolledWindow):
         self._defaultFont: Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_NORMAL)
         self._nameFont:    Font   = Font(DEFAULT_FONT_SIZE, FONTFAMILY_SWISS, FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
 
-        self._shapes:         ShapeEventHandlers = ShapeEventHandlers([])
-
+        self._shapes:           BaseShapes     = BaseShapes([])
         self._lastMousePosition: MousePosition = NO_MOUSE_POSITION
 
         self.Bind(EVT_LEFT_DOWN, self._onLeftDown)
         self.Bind(EVT_LEFT_UP,   self._onLeftUp)
 
     # noinspection PyUnusedLocal
-    def _shapedMoved(self, shape: RectangleShape):
+    def _shapedMoved(self, shape: BaseShape):
         """
         Superclass needs to implement this;
 
@@ -100,7 +102,17 @@ class BaseDiagramFrame(ScrolledWindow):
         """
         assert False, 'The superclass needs to implement this'
 
-    def _eventDelegator(self, event: MouseEvent, methodName: str) -> RectangleShape:
+    def _sideSelected(self, shape: BaseShape, side: SelectorSide):
+        """
+        Superclass needs to implement this;
+
+        Args:
+            shape:
+            side:
+        """
+        assert False, 'The superclass needs to implement this'
+
+    def _eventDelegator(self, event: MouseEvent, methodName: str) -> BaseShape:
         """
         This handler finds the shape at the event coordinates and dispatches the event.
         The handler will receive an event with coordinates already scrolled.
@@ -111,15 +123,14 @@ class BaseDiagramFrame(ScrolledWindow):
 
         Returns:  The clicked shape
         """
-        from tests.demo.shapes.DemoShape import DemoShape
         x, y = self._getEventPosition(event)
 
-        shape: RectangleShape = self._findShape(x, y)
+        shape: BaseShape = self._findShape(x, y)
 
         # event.m_x, event.m_y = x, y
 
-        if shape is not None and isinstance(shape, RectangleShape):
-            self._baseLogger.debug(f'_eventDelegator - `{cast(DemoShape, shape).identifier=}` `{methodName=}` x,y: {x},{y}')
+        if shape is not None and isinstance(shape, BaseShape):
+            self._baseLogger.debug(f'_eventDelegator - `{shape=}` `{methodName=}` x,y: {x},{y}')
             getattr(shape, methodName)(event)
         else:
             event.Skip()
@@ -128,35 +139,33 @@ class BaseDiagramFrame(ScrolledWindow):
 
     def _onLeftDown(self, event: MouseEvent):
 
-        shape: RectangleShape = self._eventDelegator(event, "onLeftDown")
+        shape: BaseShape = self._eventDelegator(event, "onLeftDown")
         # # clicked on Canvas; clear selections
         if shape is None:
             self._baseLogger.info('Clicked on canvas')
-            # for s in self._shapes:
-            #     if isinstance(s, BaseShape):
-            #         cast(BaseShape, s).selected = False
             self._deselectAll()
-        else:
-            # for s in self._shapes:
-            #     s.selected = False
+        elif isinstance(shape, DemoShape):
             self._deselectAll()
-            if isinstance(shape, RectangleShape):
-                shape.selected = True
-                if not event.GetSkipped():
-                    self._baseLogger.info(f'{event.GetSkipped()=}')
-                    return
+            shape.selected = True
+            if not event.GetSkipped():
+                self._baseLogger.info(f'{event.GetSkipped()=}')
+                return
+            # Manage click and drag
+            x, y = event.GetX(), event.GetY()
+            self._lastMousePosition = MousePosition((x, y))
+            self.Bind(EVT_MOTION, self._onDrag)
+        elif isinstance(shape, DemoSelectorShape):
+            selectorShape: DemoSelectorShape = cast(DemoSelectorShape, shape)
+            self._baseLogger.debug(f'{selectorShape=}')
+            self._sideSelected(shape=selectorShape.parent, side=selectorShape.side)
 
-                # Manage click and drag
-                x, y = event.GetX(), event.GetY()
-                self._lastMousePosition = MousePosition((x, y))
-
-                self.Bind(EVT_MOTION, self._onDrag)
         self.Refresh()
 
     def _onLeftUp(self, event: MouseEvent):
 
-        shape = self._eventDelegator(event, "onLeftUp")
-        if shape is not None:
+        shape: BaseShape = self._eventDelegator(event, "onLeftUp")
+        self._baseLogger.debug(f'LeftUp - {shape}')
+        if shape is not None and isinstance(shape, DemoShape):
             self._shapedMoved(shape)
 
         self._moving = False
@@ -270,7 +279,7 @@ class BaseDiagramFrame(ScrolledWindow):
         xDelta, yDelta = self.GetScrollPixelsPerUnit()
         return event.GetX() + (xView * xDelta), event.GetY() + (yView * yDelta)
 
-    def _findShape(self, x: int, y: int):
+    def _findShape(self, x: int, y: int) -> BaseShape:
         """
         Return the shape at (x, y).
 
@@ -281,8 +290,8 @@ class BaseDiagramFrame(ScrolledWindow):
         Returns:  The shape that was found under the coordinates or None
         """
         self._baseLogger.debug(f'FindShape: @{x},{y}')
-        found:  ShapeEventHandler  = cast(ShapeEventHandler, None)
-        shapes: ShapeEventHandlers = self._shapes
+        found:  BaseShape  = cast(BaseShape, None)
+        shapes: BaseShapes = self._shapes
 
         shapes.reverse()    # to select the one at the top
 
@@ -291,6 +300,9 @@ class BaseDiagramFrame(ScrolledWindow):
                 self._baseLogger.debug(f"Inside: {shape}")
                 found = shape
                 break   # only select the first one
+
+        shapes.reverse()    # Put them back
+
         return found
 
     def _deselectAll(self):

@@ -91,7 +91,7 @@ class OrthogonalConnectorAdapter:
 
         self.runConnector(options=options,
                           sourceConnectorPoint=ConnectorPoint(shape=self._sourceRect, side=Side.BOTTOM, distance=0.5),
-                          destinationConnectorPoint=ConnectorPoint(shape=self._destinationRect, side=Side.RIGHT,  distance=0.7)
+                          destinationConnectorPoint=ConnectorPoint(shape=self._destinationRect, side=Side.BOTTOM,  distance=0.5)
                           )
 
     def runConnector(self, sourceConnectorPoint: ConnectorPoint, destinationConnectorPoint: ConnectorPoint, options: OrthogonalConnectorOptions):

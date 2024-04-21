@@ -6,10 +6,10 @@ from typing import Tuple
 from logging import Logger
 from logging import getLogger
 
-from tests.demo.shapes.ShapeEventHandler import ShapeEventHandler
+from tests.demo.shapes.BaseShape import BaseShape
 
 
-class RectangleShape(ShapeEventHandler):
+class RectangleShape(BaseShape):
 
     def __init__(self, left: int, top: int, width: int, height: int):
 
@@ -84,6 +84,14 @@ class RectangleShape(ShapeEventHandler):
     # noinspection PyChainedComparisons
     def contains(self, x: int, y: int) -> bool:
         return x >= self._left and x <= self.right and y >= self._top and y <= self.bottom
+
+    def __str__(self) -> str:
+        return (
+            f'left={self.left} '
+            f'top={self.top} '
+            f'width={self.width} '
+            f'height={self.height}'
+        )
 
 
 BaseShapes = NewType('BaseShapes', List[RectangleShape])

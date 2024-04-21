@@ -34,7 +34,7 @@ from tests.demo.IEventEngine import IEventEngine
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 
 from tests.demo.BaseDiagramFrame import BaseDiagramFrame
-from tests.demo.shapes.RectangleShape import RectangleShape
+from tests.demo.shapes.BaseShape import BaseShape
 from tests.demo.shapes.DemoShape import DemoShape
 
 from tests.demo.DemoColorEnum import DemoColorEnum
@@ -48,7 +48,7 @@ from tests.demo.DemoEvents import RefreshFrameEvent
 from tests.demo.DemoEvents import ShowReferencePointsEvent
 from tests.demo.DemoEvents import ShowRouteGridEvent
 from tests.demo.DemoEvents import ShowRulersEvent
-
+from tests.demo.shapes.SelectorSide import SelectorSide
 
 REFERENCE_POINT_WIDTH:  int = 8
 REFERENCE_POINT_HEIGHT: int = 8
@@ -111,7 +111,7 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
         self._orthogonalConnectorAdapter = newValue
 
-    def _shapedMoved(self, shape: RectangleShape):
+    def _shapedMoved(self, shape: BaseShape):
         """
 
         Args:
@@ -124,9 +124,26 @@ class DemoDiagramFrame(BaseDiagramFrame):
         elif demoShape == self._destinationShape:
             which = 'destination'
         else:
-            assert False, 'It has to be one or the other'
+            return
 
         self._eventEngine.sendEvent(DemoEventType.SHAPED_MOVED, shape=demoShape, which=which)
+
+    def _sideSelected(self, shape: BaseShape, side: SelectorSide):
+        """
+        Superclass needs to implement this;
+
+        Args:
+            shape:
+            side:
+        """
+        demoShape: DemoShape = cast(DemoShape, shape)
+        if demoShape.identifier == self._sourceShape.identifier:
+            which: str = 'source'
+        elif demoShape.identifier == self._destinationShape.identifier:
+            which = 'destination'
+        else:
+            assert False, 'Has to be one or the other'
+        self._eventEngine.sendEvent(DemoEventType.CONNECTION_POSITION_CHANGED, shape=shape, which=which, side=side)
 
     # noinspection PyUnusedLocal
     def Refresh(self, eraseBackground: bool = True, rect: Rect = None):

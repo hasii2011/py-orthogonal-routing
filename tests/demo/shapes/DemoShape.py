@@ -13,6 +13,7 @@ from wx import RED_PEN
 from tests.demo.shapes.RectangleShape import RectangleShape
 from tests.demo.shapes.DemoSelectorShape import DemoSelectorShape
 from tests.demo.shapes.DemoSelectorShape import DemoSelectorShapes
+from tests.demo.shapes.SelectorSide import SelectorSide
 
 ROUNDED_RECTANGLE_RADIUS: int = 8
 
@@ -31,15 +32,15 @@ class DemoShape(RectangleShape):
 
         DemoShape.nextId += 1
 
-        self._northSelector: DemoSelectorShape = cast(DemoSelectorShape, None)
-        self._southSelector: DemoSelectorShape = cast(DemoSelectorShape, None)
-        self._eastSelector:  DemoSelectorShape = cast(DemoSelectorShape, None)
-        self._westSelector:  DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._topSelector:    DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._bottomSelector: DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._rightSelector:  DemoSelectorShape = cast(DemoSelectorShape, None)
+        self._leftSelector:   DemoSelectorShape = cast(DemoSelectorShape, None)
 
         self._createSelectors()
 
         self._selectorShapes: DemoSelectorShapes = DemoSelectorShapes([
-            self._northSelector, self._southSelector, self._eastSelector, self._westSelector
+            self._topSelector, self._bottomSelector, self._rightSelector, self._leftSelector
         ])
 
     @property
@@ -64,10 +65,10 @@ class DemoShape(RectangleShape):
         return self._selectorShapes
 
     def _drawSelectors(self, dc: DC):
-        self._northSelector.draw(dc=dc)
-        self._southSelector.draw(dc=dc)
-        self._eastSelector.draw(dc=dc)
-        self._westSelector.draw(dc=dc)
+        self._topSelector.draw(dc=dc)
+        self._bottomSelector.draw(dc=dc)
+        self._rightSelector.draw(dc=dc)
+        self._leftSelector.draw(dc=dc)
 
     def _createSelectors(self):
 
@@ -75,19 +76,19 @@ class DemoShape(RectangleShape):
 
         x: int = width // 2
         y: int = 0
-        self._northSelector = DemoSelectorShape(parent=self, x=x, y=y)
+        self._topSelector = DemoSelectorShape(parent=self, side=SelectorSide.TOP, x=x, y=y)
 
         x = width // 2
         y = height
-        self._southSelector = DemoSelectorShape(parent=self, x=x, y=y)
+        self._bottomSelector = DemoSelectorShape(parent=self, side=SelectorSide.BOTTOM, x=x, y=y)
 
         x = width
         y = height // 2
-        self._eastSelector = DemoSelectorShape(parent=self, x=x, y=y)
+        self._rightSelector = DemoSelectorShape(parent=self, side=SelectorSide.RIGHT, x=x, y=y)
 
         x = 0
         y = height // 2
-        self._westSelector = DemoSelectorShape(parent=self, x=x, y=y)
+        self._leftSelector = DemoSelectorShape(parent=self, side=SelectorSide.LEFT, x=x, y=y)
 
     def __eq__(self, other) -> bool:
 
@@ -106,6 +107,9 @@ class DemoShape(RectangleShape):
         ourStr:  str = f'identifier={self.identifier} {baseStr}'
 
         return ourStr
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 DemoShapes = NewType('DemoShapes', List[DemoShape])
