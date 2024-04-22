@@ -143,7 +143,7 @@ class DemoDiagramFrame(BaseDiagramFrame):
             which = 'destination'
         else:
             assert False, 'Has to be one or the other'
-        self._eventEngine.sendEvent(DemoEventType.CONNECTION_POSITION_CHANGED, shape=shape, which=which, side=side)
+        self._eventEngine.sendEvent(DemoEventType.CONNECTION_SIDE_CHANGED, shape=shape, which=which, side=side)
 
     # noinspection PyUnusedLocal
     def Refresh(self, eraseBackground: bool = True, rect: Rect = None):

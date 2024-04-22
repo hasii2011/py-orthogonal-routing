@@ -7,10 +7,10 @@ from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.enumerations.Side import Side
-from tests.demo.DemoEvents import ConnectionPositionChangedEvent
+from tests.demo.DemoEvents import ConnectionSideChangedEvent
 
 from tests.demo.DemoEvents import DemoEventType
-from tests.demo.DemoEvents import EVT_CONNECTION_POSITION_CHANGED
+from tests.demo.DemoEvents import EVT_CONNECTION_SIDE_CHANGED
 from tests.demo.DemoEvents import EVT_SHAPE_MOVED
 from tests.demo.DemoEvents import ShapeMovedEvent
 
@@ -40,7 +40,7 @@ class DiagramChangedHandler:
         self._eventEngine = eventEngine
 
         self._eventEngine.registerListener(EVT_SHAPE_MOVED,                 self._onShapeMoved)
-        self._eventEngine.registerListener(EVT_CONNECTION_POSITION_CHANGED, self._onConnectionPositionChanged)
+        self._eventEngine.registerListener(EVT_CONNECTION_SIDE_CHANGED, self._onConnectionPositionChanged)
 
     @property
     def orthogonalConnectorAdapter(self):
@@ -50,7 +50,7 @@ class DiagramChangedHandler:
     def orthogonalConnectorAdapter(self, value: OrthogonalConnectorAdapter):
         self._orthogonalConnectorAdapter = value
 
-    def _onConnectionPositionChanged(self, event: ConnectionPositionChangedEvent):
+    def _onConnectionPositionChanged(self, event: ConnectionSideChangedEvent):
 
         shape: DemoShape    = event.shape
         which: str          = event.which

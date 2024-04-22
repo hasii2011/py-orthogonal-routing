@@ -8,7 +8,7 @@ from wx import PostEvent
 from wx import PyEventBinder
 from wx import Window
 
-from tests.demo.DemoEvents import ConnectionPositionChangedEvent
+from tests.demo.DemoEvents import ConnectionSideChangedEvent
 from tests.demo.DemoEvents import DemoEventType
 from tests.demo.DemoEvents import RefreshFrameEvent
 from tests.demo.DemoEvents import ShapeMovedEvent
@@ -55,7 +55,7 @@ class DemoEventEngine(IEventEngine):
                     self._sendShowRulersEvent(**kwargs)
                 case DemoEventType.SHAPED_MOVED:
                     self._sendShapeMovedEvent(**kwargs)
-                case DemoEventType.CONNECTION_POSITION_CHANGED:
+                case DemoEventType.CONNECTION_SIDE_CHANGED:
                     self._sendConnectionPositionChangedEvent(**kwargs)
                 case DemoEventType.REFRESH_FRAME:
                     self._sendRefreshFrameEvent(**kwargs)
@@ -97,7 +97,7 @@ class DemoEventEngine(IEventEngine):
         side:  SelectorSide = kwargs[SIDE_PARAMETER]
         which: str          = kwargs[WHICH_PARAMETER]
 
-        event: ConnectionPositionChangedEvent = ConnectionPositionChangedEvent(shape=shape, which=which, side=side)
+        event: ConnectionSideChangedEvent = ConnectionSideChangedEvent(shape=shape, which=which, side=side)
         PostEvent(dest=self._listeningWindow, event=event)
 
     def _sendRefreshFrameEvent(self, **kwargs):
