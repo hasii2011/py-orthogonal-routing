@@ -7,9 +7,11 @@ from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.enumerations.Side import Side
+from tests.demo.DemoEvents import ConnectionPositionChangedEvent
 from tests.demo.DemoEvents import ConnectionSideChangedEvent
 
 from tests.demo.DemoEvents import DemoEventType
+from tests.demo.DemoEvents import EVT_CONNECTION_POSITION_CHANGED
 from tests.demo.DemoEvents import EVT_CONNECTION_SIDE_CHANGED
 from tests.demo.DemoEvents import EVT_SHAPE_MOVED
 from tests.demo.DemoEvents import ShapeMovedEvent
@@ -40,7 +42,8 @@ class DiagramChangedHandler:
         self._eventEngine = eventEngine
 
         self._eventEngine.registerListener(EVT_SHAPE_MOVED,                 self._onShapeMoved)
-        self._eventEngine.registerListener(EVT_CONNECTION_SIDE_CHANGED, self._onConnectionPositionChanged)
+        self._eventEngine.registerListener(EVT_CONNECTION_SIDE_CHANGED,     self._onConnectionSideChanged)
+        self._eventEngine.registerListener(EVT_CONNECTION_POSITION_CHANGED, self._onConnectionPositionChanged)
 
     @property
     def orthogonalConnectorAdapter(self):
@@ -50,7 +53,7 @@ class DiagramChangedHandler:
     def orthogonalConnectorAdapter(self, value: OrthogonalConnectorAdapter):
         self._orthogonalConnectorAdapter = value
 
-    def _onConnectionPositionChanged(self, event: ConnectionSideChangedEvent):
+    def _onConnectionSideChanged(self, event: ConnectionSideChangedEvent):
 
         shape: DemoShape    = event.shape
         which: str          = event.which
@@ -75,6 +78,30 @@ class DiagramChangedHandler:
             destinationConnector.side = engineSide
         else:
             assert False, 'Hmm, developer error'
+
+        adapter.runConnector(sourceConnectorPoint=sourceConnector, destinationConnectorPoint=destinationConnector, options=options)
+
+        self._eventEngine.sendEvent(DemoEventType.REFRESH_FRAME)
+
+    def _onConnectionPositionChanged(self, event: ConnectionPositionChangedEvent):
+
+        shapeName: str   = event.shapeName
+        position:  float = event.position
+
+        self.logger.info(f'{shapeName=} {position=}')
+
+        adapter: OrthogonalConnectorAdapter = self._orthogonalConnectorAdapter
+        options: OrthogonalConnectorOptions = adapter.options
+
+        sourceConnector:      ConnectorPoint = options.pointA
+        destinationConnector: ConnectorPoint = options.pointB
+
+        if shapeName == 'Source':
+            sourceConnector.distance = position
+        elif shapeName == 'Destination':
+            destinationConnector.distance = position
+        else:
+            assert False, 'Must be one or the other'
 
         adapter.runConnector(sourceConnectorPoint=sourceConnector, destinationConnectorPoint=destinationConnector, options=options)
 

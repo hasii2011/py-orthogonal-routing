@@ -8,6 +8,7 @@ from wx import PostEvent
 from wx import PyEventBinder
 from wx import Window
 
+from tests.demo.DemoEvents import ConnectionPositionChangedEvent
 from tests.demo.DemoEvents import ConnectionSideChangedEvent
 from tests.demo.DemoEvents import DemoEventType
 from tests.demo.DemoEvents import RefreshFrameEvent
@@ -31,6 +32,8 @@ SHOW_RULERS_PARAMETER:           str = 'showRulers'
 SHAPE_PARAMETER:                 str = 'shape'
 WHICH_PARAMETER:                 str = 'which'
 SIDE_PARAMETER:                  str = 'side'
+SHAPE_NAME_PARAMETER:            str = 'shapeName'
+POSITION_PARAMETER:              str = 'position'
 
 
 class DemoEventEngine(IEventEngine):
@@ -56,9 +59,11 @@ class DemoEventEngine(IEventEngine):
                 case DemoEventType.SHAPED_MOVED:
                     self._sendShapeMovedEvent(**kwargs)
                 case DemoEventType.CONNECTION_SIDE_CHANGED:
+                    self._sendConnectionSideChangedEvent(**kwargs)
+                case DemoEventType.CONNECTION_POSITION_CHANGED:
                     self._sendConnectionPositionChangedEvent(**kwargs)
                 case DemoEventType.REFRESH_FRAME:
-                    self._sendRefreshFrameEvent(**kwargs)
+                    self._sendRefreshFrameEvent()
                 case _:
                     self.logger.warning(f'Unknown Ogl Event Type: {eventType}')
         except KeyError as ke:
@@ -91,7 +96,7 @@ class DemoEventEngine(IEventEngine):
         event: ShapeMovedEvent = ShapeMovedEvent(shape=shape, which=which)
         PostEvent(dest=self._listeningWindow, event=event)
 
-    def _sendConnectionPositionChangedEvent(self, **kwargs):
+    def _sendConnectionSideChangedEvent(self, **kwargs):
 
         shape: DemoShape    = kwargs[SHAPE_PARAMETER]
         side:  SelectorSide = kwargs[SIDE_PARAMETER]
@@ -100,7 +105,15 @@ class DemoEventEngine(IEventEngine):
         event: ConnectionSideChangedEvent = ConnectionSideChangedEvent(shape=shape, which=which, side=side)
         PostEvent(dest=self._listeningWindow, event=event)
 
-    def _sendRefreshFrameEvent(self, **kwargs):
+    def _sendConnectionPositionChangedEvent(self, **kwargs):
+        shapeName: str   = kwargs[SHAPE_NAME_PARAMETER]
+        position:  float = kwargs[POSITION_PARAMETER]
+
+        event: ConnectionPositionChangedEvent = ConnectionPositionChangedEvent(shapeName=shapeName, position=position)
+
+        PostEvent(dest=self._listeningWindow, event=event)
+
+    def _sendRefreshFrameEvent(self):
 
         event: RefreshFrameEvent = RefreshFrameEvent()
         PostEvent(dest=self._listeningWindow, event=event)

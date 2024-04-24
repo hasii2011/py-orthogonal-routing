@@ -7,6 +7,7 @@ from logging import getLogger
 from wx import CheckBox
 from wx import CommandEvent
 from wx import EVT_CHECKBOX
+from wx import EVT_SPINCTRLDOUBLE
 from wx import FONTFAMILY_SWISS
 from wx import FONTSTYLE_NORMAL
 from wx import FONTWEIGHT_BOLD
@@ -15,6 +16,7 @@ from wx import Font
 from wx import SP_ARROW_KEYS
 from wx import SP_WRAP
 from wx import SpinCtrlDouble
+from wx import SpinDoubleEvent
 from wx import StaticText
 from wx import Window
 
@@ -117,6 +119,9 @@ class DemoControlFrame(SizedPanel):
         parent.Bind(EVT_CHECKBOX, self._onShowReferencePoints, self._showReferencePoints)
         parent.Bind(EVT_CHECKBOX, self._onShowRouteGrid,       self._showRouteGrid)
 
+        parent.Bind(EVT_SPINCTRLDOUBLE, self.onShapeAPositionChanged, self._shapeAConnectionPosition)
+        parent.Bind(EVT_SPINCTRLDOUBLE, self.onShapeBPositionChanged, self._shapeBConnectionPosition)
+
     def _onShowRulers(self, event: CommandEvent):
 
         newValue: bool = event.IsChecked()
@@ -140,3 +145,13 @@ class DemoControlFrame(SizedPanel):
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showRouteGrid - {newValue=}')
         self._eventEngine.sendEvent(DemoEventType.SHOW_ROUTE_GRID, showRouteGrid=newValue)
+
+    def onShapeAPositionChanged(self, event: SpinDoubleEvent):
+
+        newValue: float = event.GetValue()
+        self._eventEngine.sendEvent(DemoEventType.CONNECTION_POSITION_CHANGED, shapeName='Source', position=newValue)
+
+    def onShapeBPositionChanged(self, event: SpinDoubleEvent):
+
+        newValue: float = event.GetValue()
+        self._eventEngine.sendEvent(DemoEventType.CONNECTION_POSITION_CHANGED, shapeName='Destination', position=newValue)
