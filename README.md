@@ -2,7 +2,7 @@
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/py-orthogonal-routing/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/py-orthogonal-routing/tree/master)
-[![PyPI version](https://badge.fury.io/py/pyutmodelv2.svg)](https://badge.fury.io/py/pyutmodelv2)
+[![PyPI version](https://badge.fury.io/py/pyorthogonalrouting.svg)](https://badge.fury.io/py/pyorthogonalrouting)
 
 This is a port of [Orthogonal Connectors](https://gist.github.com/jose-mdz/4a8894c152383b9d7a870c24a04447e4).
 
