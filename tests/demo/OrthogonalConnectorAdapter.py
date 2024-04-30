@@ -5,6 +5,7 @@ from logging import Logger
 from logging import getLogger
 
 from pyorthogonalrouting.Common import Integers
+from pyorthogonalrouting.Configuration import Configuration
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnector import OrthogonalConnector
 from pyorthogonalrouting.OrthogonalConnectorByProduct import OrthogonalConnectorByProduct
@@ -34,6 +35,8 @@ class OrthogonalConnectorAdapter:
         self._options:          OrthogonalConnectorOptions = cast(OrthogonalConnectorOptions, None)
         self._sourceShape:      DemoShape                  = cast(DemoShape, None)
         self._destinationShape: DemoShape                  = cast(DemoShape, None)
+
+        self._configuration: Configuration = Configuration()
 
     @property
     def sourceShape(self) -> DemoShape:
@@ -85,9 +88,9 @@ class OrthogonalConnectorAdapter:
 
         options: OrthogonalConnectorOptions = OrthogonalConnectorOptions()
 
-        options.shapeMargin        = 20
-        options.globalBoundsMargin = 50
-        options.globalBounds       = Rect(left=0, top=0, width=500, height=500)
+        options.shapeMargin        = self._configuration.shapeMargin
+        options.globalBoundsMargin = self._configuration.globalBoundsMargin
+        options.globalBounds       = self._configuration.globalBounds
 
         self.runConnector(options=options,
                           sourceConnectorPoint=ConnectorPoint(shape=self._sourceRect, side=Side.BOTTOM, distance=0.5),
