@@ -8,6 +8,7 @@ from codeallybasic.ConfigurationProperties import Section
 from codeallybasic.ConfigurationProperties import SectionName
 from codeallybasic.ConfigurationProperties import Sections
 from codeallybasic.ConfigurationProperties import configurationGetter
+from codeallybasic.ConfigurationProperties import configurationSetter
 
 from codeallybasic.SingletonV3 import SingletonV3
 
@@ -47,7 +48,7 @@ class Configuration(ConfigurationProperties, metaclass=SingletonV3):
         return 0
 
     @shapeMargin.setter
-    @configurationGetter(sectionName=MAIN_SECTION_NAME)
+    @configurationSetter(sectionName=MAIN_SECTION_NAME)
     def shapeMargin(self, newValue: int):
         pass
 
@@ -57,7 +58,7 @@ class Configuration(ConfigurationProperties, metaclass=SingletonV3):
         return 0
 
     @globalBoundsMargin.setter
-    @configurationGetter(sectionName=MAIN_SECTION_NAME)
+    @configurationSetter(sectionName=MAIN_SECTION_NAME)
     def globalBoundsMargin(self, newValue: int):
         pass
 
@@ -67,6 +68,6 @@ class Configuration(ConfigurationProperties, metaclass=SingletonV3):
         return cast(Rect, None)
 
     @globalBounds.setter
-    @configurationGetter(sectionName=MAIN_SECTION_NAME)
+    @configurationSetter(sectionName=MAIN_SECTION_NAME)
     def globalBounds(self, newValue: Rect):
         pass
