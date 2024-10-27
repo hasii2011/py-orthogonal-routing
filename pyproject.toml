@@ -12,7 +12,7 @@ authors = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
 keywords = ['orthogonal', 'routing', 'python', 'pyut']
 
-dependencies = ['codeallybasic==1.3.2']
+dependencies = ['codeallybasic==1.7.0']
 
 [project.urls]
 Repository = 'https://github.com/hasii2011/py-orthogonal-routing'
