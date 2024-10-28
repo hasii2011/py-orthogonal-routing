@@ -10,3 +10,6 @@ codeallybasic==1.7.0
 
 # For developer and circleci
 buildlackey==1.7.0
+
+# Manually install this in order to run demo
+# wxPython~=4.2.2

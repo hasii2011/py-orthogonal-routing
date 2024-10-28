@@ -36,7 +36,7 @@ class OrthogonalConnectorAdapter:
         self._sourceShape:      DemoShape                  = cast(DemoShape, None)
         self._destinationShape: DemoShape                  = cast(DemoShape, None)
 
-        self._configuration: Configuration = Configuration()
+        self._configuration:   Configuration   = Configuration()
 
     @property
     def sourceShape(self) -> DemoShape:
