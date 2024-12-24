@@ -14,7 +14,7 @@ ___
 ## Note
 For all kinds of problems, requests, enhancements, bug reports, etc.,
 drop me an e-mail.
-Written by <a href="mailto:email@humberto.a.sanchez.ii@gmail.com?subject=Hello Humberto">Humberto A. Sanchez II</a>  (C) 2024
+Written by <a href="mailto:email@humberto.a.sanchez.ii@gmail.com?subject=Hello Humberto">Humberto A. Sanchez II</a>  (C) 2025
 
 
 
