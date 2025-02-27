@@ -27,8 +27,9 @@ Repository = 'https://github.com/hasii2011/py-orthogonal-routing'
 
 [project.optional-dependencies]
 test = [
-  'mypy==1.15.0',
-  'html-testRunner~=1.2.1',
+    'mypy==1.15.0',
+    'html-testRunner~=1.2.1',
+    'wxPython~=4.2.2',
 ]
 
 deploy = [

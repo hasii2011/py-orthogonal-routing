@@ -4,8 +4,7 @@ __pycache__/
 /html/
 build/
 dist/
-/pyenv-3.11.7/
-/pyenv-3.12.4/
+/pyenv-3.12.9/
 /site/
 /docs/
 /.mypy_cache
