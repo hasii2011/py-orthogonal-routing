@@ -34,7 +34,7 @@ test = [
 deploy = [
     'wheel==0.45.1',
     'setuptools==75.8.2',
-    'twine==6.1.0',
+    'twine==6.0.1',
     'build==1.2.2.post1',
 ]
 
