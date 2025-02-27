@@ -1,11 +1,14 @@
 wheel==0.45.1
+# Don't upgrade past this version as 70.x.x does not work
+setuptools==70.1.1
+
 twine==6.0.1
 build==1.2.2.post1
 
 html-testRunner~=1.2.1
 mypy==1.14.0
 
-codeallybasic>=1.8.0
+codeallybasic>=1.10.0
 
 # For developer and circleci
 buildlackey==1.7.0

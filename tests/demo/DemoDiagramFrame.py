@@ -162,7 +162,7 @@ class DemoDiagramFrame(BaseDiagramFrame):
 
         x, y = self.CalcUnscrolledPosition(0, 0)
 
-        # self._drawGrid(memDC=mem, width=w, height=h, startX=x, startY=y)
+        self._drawGrid(memDC=mem, width=w, height=h, startX=x, startY=y)
 
         if self._orthogonalConnectorAdapter is not None:
 
