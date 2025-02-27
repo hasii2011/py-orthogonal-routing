@@ -12,11 +12,31 @@ authors = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
 keywords = ['orthogonal', 'routing', 'python', 'pyut']
 
+classifiers = [
+  "Programming Language :: Python",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
+  "Operating System :: MacOS :: MacOS X",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
 dependencies = ['codeallybasic>=1.10.0']
 
 [project.urls]
 Repository = 'https://github.com/hasii2011/py-orthogonal-routing'
 
+[project.optional-dependencies]
+test = [
+  'mypy==1.15.0',
+  'html-testRunner~=1.2.1',
+]
+
+deploy = [
+    "wheel==0.45.1",
+    "setuptools==75.8.2",
+    "twine==6.1.0",
+    "build==1.2.2.post1",
+]
 
 [tool.setuptools.packages.find]
 where = ['src']
