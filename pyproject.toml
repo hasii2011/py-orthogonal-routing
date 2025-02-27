@@ -29,14 +29,17 @@ Repository = 'https://github.com/hasii2011/py-orthogonal-routing'
 test = [
     'mypy==1.15.0',
     'html-testRunner~=1.2.1',
-    'wxPython~=4.2.2',
 ]
 
 deploy = [
-    "wheel==0.45.1",
-    "setuptools==75.8.2",
-    "twine==6.1.0",
-    "build==1.2.2.post1",
+    'wheel==0.45.1',
+    'setuptools==75.8.2',
+    'twine==6.1.0',
+    'build==1.2.2.post1',
+]
+
+demo = [
+    'wxPython~=4.2.2',
 ]
 
 [tool.setuptools.packages.find]
