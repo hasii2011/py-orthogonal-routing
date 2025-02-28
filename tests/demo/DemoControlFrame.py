@@ -22,6 +22,7 @@ from wx import Window
 
 from wx.lib.sized_controls import SizedPanel
 
+from pyorthogonalrouting.Configuration import Configuration
 from tests.demo.DemoEvents import DemoEventType
 from tests.demo.IEventEngine import IEventEngine
 
@@ -45,7 +46,9 @@ class DemoControlFrame(SizedPanel):
         self._shapeAConnectionPosition: SpinCtrlDouble = cast(SpinCtrlDouble, None)
         self._shapeBConnectionPosition: SpinCtrlDouble = cast(SpinCtrlDouble, None)
 
-        self._eventEngine: IEventEngine = cast(IEventEngine, None)
+        self._configuration: Configuration = Configuration()
+
+        self._eventEngine:   IEventEngine  = cast(IEventEngine, None)
 
         self._layoutControls(self)
         self._setControlValues()
@@ -110,7 +113,8 @@ class DemoControlFrame(SizedPanel):
     def _setControlValues(self):
         """
         """
-        pass
+        self._shapeAConnectionPosition.SetValue(self._configuration.sourceEdgeDistance)
+        self._shapeBConnectionPosition.SetValue(self._configuration.destinationEdgeDistance)
 
     def _bindCallbacks(self, parent):
 

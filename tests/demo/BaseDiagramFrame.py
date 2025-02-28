@@ -142,7 +142,6 @@ class BaseDiagramFrame(ScrolledWindow):
         shape: BaseShape = self._eventDelegator(event, "onLeftDown")
         # # clicked on Canvas; clear selections
         if shape is None:
-            self._baseLogger.info('Clicked on canvas')
             self._deselectAll()
         elif isinstance(shape, DemoShape):
             self._deselectAll()

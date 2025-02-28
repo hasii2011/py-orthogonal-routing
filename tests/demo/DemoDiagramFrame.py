@@ -321,7 +321,6 @@ class DemoDiagramFrame(BaseDiagramFrame):
             dc.DrawLine(x1=0, y1=y, x2=globalBounds.width, y2=y)
 
         for x in verticalRulers:
-            self.logger.info(f'{x=}')
             dc.DrawLine(x1=x, y1=0, x2=x, y2=globalBounds.height)
 
         dc.SetPen(savePen)
