@@ -41,8 +41,16 @@ class OrthogonalConnector:
     def __init__(self):
         self.logger: Logger = getLogger(__name__)
 
+    # noinspection PyTypeChecker
     @classmethod
     def route(cls, options: OrthogonalConnectorOptions) -> Points:
+        """
+
+        Args:
+            options:   How to run me
+
+        Returns:  An empty list if not path is found
+        """
 
         pointA:             ConnectorPoint = options.pointA
         pointB:             ConnectorPoint = options.pointB
@@ -150,11 +158,12 @@ class OrthogonalConnector:
         start: Point = computePt(pointA)
         end:   Point = computePt(pointB)
 
-        OrthogonalConnector.byProduct.spots       = spots
-        OrthogonalConnector.byProduct.vRulers     = verticals
-        OrthogonalConnector.byProduct.hRulers     = horizontals
-        OrthogonalConnector.byProduct.grid        = grid.rectangles
-        OrthogonalConnector.byProduct.connections = connections
+        OrthogonalConnector.byProduct.spots        = spots
+        OrthogonalConnector.byProduct.vRulers      = verticals
+        OrthogonalConnector.byProduct.hRulers      = horizontals
+        OrthogonalConnector.byProduct.grid         = grid.rectangles
+        OrthogonalConnector.byProduct.connections  = connections
+        OrthogonalConnector.byProduct.diagramBounds = bigBounds
 
         path: Points = PointGraph.shortestPath(graph, origin, destination)
 
