@@ -8,7 +8,7 @@ from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.ConnectorPoint import NO_CONNECTOR_POINT
 
 
-@dataclass(slots=True)
+@dataclass
 class OrthogonalConnectorOptions:
 
     pointA:             ConnectorPoint = NO_CONNECTOR_POINT

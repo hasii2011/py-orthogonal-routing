@@ -93,8 +93,16 @@ class OrthogonalConnectorAdapter:
         options.globalBounds       = self._configuration.globalBounds
 
         self.runConnector(options=options,
-                          sourceConnectorPoint=ConnectorPoint(shape=self._sourceRect, side=Side.BOTTOM, distance=self._configuration.sourceEdgeDistance),
-                          destinationConnectorPoint=ConnectorPoint(shape=self._destinationRect, side=Side.BOTTOM,  distance=self._configuration.destinationEdgeDistance)
+                          sourceConnectorPoint=ConnectorPoint(
+                                  shape=self._sourceRect,
+                                  side=Side.BOTTOM,
+                                  distance=self._configuration.sourceEdgeDistance
+                              ),
+                          destinationConnectorPoint=ConnectorPoint(
+                                  shape=self._destinationRect,
+                                  side=Side.BOTTOM,
+                                  distance=self._configuration.destinationEdgeDistance
+                              )
                           )
 
     def runConnector(self, sourceConnectorPoint: ConnectorPoint, destinationConnectorPoint: ConnectorPoint, options: OrthogonalConnectorOptions):

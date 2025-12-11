@@ -4,17 +4,18 @@ from typing import cast
 from logging import Logger
 from logging import getLogger
 
-from wx import CheckBox
-from wx import CommandEvent
 from wx import EVT_CHECKBOX
 from wx import EVT_SPINCTRLDOUBLE
 from wx import FONTFAMILY_SWISS
 from wx import FONTSTYLE_NORMAL
 from wx import FONTWEIGHT_BOLD
-from wx import Font
-
 from wx import SP_ARROW_KEYS
 from wx import SP_WRAP
+
+from wx import Font
+from wx import CheckBox
+from wx import CommandEvent
+from wx import Size
 from wx import SpinCtrlDouble
 from wx import SpinDoubleEvent
 from wx import StaticText
@@ -97,7 +98,7 @@ class DemoControlFrame(SizedPanel):
 
         self._shapeAConnectionPosition = SpinCtrlDouble(container,
                                                         initial=0.5, min=0.0, max=1.0,
-                                                        size=(200, -1),
+                                                        size=Size(200, -1),
                                                         style=SP_ARROW_KEYS | SP_WRAP
                                                         )
         self._shapeAConnectionPosition.SetIncrement(0.1)
@@ -105,7 +106,7 @@ class DemoControlFrame(SizedPanel):
         StaticText(container, label='Shape B Connector Position')
         self._shapeBConnectionPosition = SpinCtrlDouble(container,
                                                         initial=0.5, min=0.0, max=1.0,
-                                                        size=(200, -1),
+                                                        size=Size(200, -1),
                                                         style=SP_ARROW_KEYS | SP_WRAP
                                                         )
         self._shapeBConnectionPosition.SetIncrement(0.1)
