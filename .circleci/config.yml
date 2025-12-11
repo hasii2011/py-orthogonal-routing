@@ -19,6 +19,7 @@ jobs:
     executor: python/default
     steps:
       - checkout
+      -   method: full
       - run:
           name: Install dependencies from pyproject.toml
           command: |

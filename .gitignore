@@ -1,13 +1,2 @@
-.idea/
-__pycache__/
-.DS_Store
-/html/
-build/
-dist/
+/src/orthogonalrouting.egg-info/
 /pyenv-3.12.9/
-/site/
-/docs/
-/.mypy_cache
-.envrc
-.python-version
-src/pyorthogonalrouting.egg-info/
