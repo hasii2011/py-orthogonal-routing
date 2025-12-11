@@ -24,8 +24,8 @@ from wx import Window
 from wx.lib.sized_controls import SizedPanel
 
 from pyorthogonalrouting.Configuration import Configuration
-from tests.demo.DemoEvents import DemoEventType
-from tests.demo.IEventEngine import IEventEngine
+from tests.demo.pubsubengine.IOrthoPubSubEngine import IOrthoPubSubEngine
+from tests.demo.pubsubengine.OrthoMessageType import OrthoMessageType
 
 
 class DemoControlFrame(SizedPanel):
@@ -49,20 +49,20 @@ class DemoControlFrame(SizedPanel):
 
         self._configuration: Configuration = Configuration()
 
-        self._eventEngine:   IEventEngine  = cast(IEventEngine, None)
+        self._pubSub: IOrthoPubSubEngine = cast(IOrthoPubSubEngine, None)
 
         self._layoutControls(self)
         self._setControlValues()
         self._bindCallbacks(parent=self)
 
     @property
-    def eventEngine(self):
+    def pubSubEngine(self):
         raise AttributeError("Cannot access write-only attribute")
 
-    @eventEngine.setter
-    def eventEngine(self, eventEngine: IEventEngine):
-        assert self._eventEngine is None, 'You should only set the event engine once'
-        self._eventEngine = eventEngine
+    @pubSubEngine.setter
+    def pubSubEngine(self, pubSubEngine: IOrthoPubSubEngine):
+        assert self._pubSub is None, 'You should only set the event engine once'
+        self._pubSub = pubSubEngine
 
     def _layoutControls(self, verticalPanel: SizedPanel):
         self._layoutAlgorithmLayers(verticalPanel)
@@ -131,7 +131,7 @@ class DemoControlFrame(SizedPanel):
 
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showRulers - {newValue=}')
-        self._eventEngine.sendEvent(DemoEventType.SHOW_RULERS, showRulers=newValue)
+        self._pubSub.sendMessage(OrthoMessageType.SHOW_RULERS, showRulers=newValue)
 
     def _onShowMainGrid(self, event: CommandEvent):
 
@@ -143,20 +143,20 @@ class DemoControlFrame(SizedPanel):
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showReferencePoints - {newValue=}')
 
-        self._eventEngine.sendEvent(DemoEventType.SHOW_REFERENCE_POINTS, showReferencePoints=newValue)
+        self._pubSub.sendMessage(OrthoMessageType.SHOW_REFERENCE_POINTS, showReferencePoints=newValue)
 
     def _onShowRouteGrid(self, event: CommandEvent):
 
         newValue: bool = event.IsChecked()
         self.logger.debug(f'showRouteGrid - {newValue=}')
-        self._eventEngine.sendEvent(DemoEventType.SHOW_ROUTE_GRID, showRouteGrid=newValue)
+        self._pubSub.sendMessage(OrthoMessageType.SHOW_ROUTE_GRID, showRouteGrid=newValue)
 
     def onShapeAPositionChanged(self, event: SpinDoubleEvent):
 
         newValue: float = event.GetValue()
-        self._eventEngine.sendEvent(DemoEventType.CONNECTION_POSITION_CHANGED, shapeName='Source', position=newValue)
+        self._pubSub.sendMessage(OrthoMessageType.CONNECTION_POSITION_CHANGED, shapeName='Source', position=newValue)
 
     def onShapeBPositionChanged(self, event: SpinDoubleEvent):
 
         newValue: float = event.GetValue()
-        self._eventEngine.sendEvent(DemoEventType.CONNECTION_POSITION_CHANGED, shapeName='Destination', position=newValue)
+        self._pubSub.sendMessage(OrthoMessageType.CONNECTION_POSITION_CHANGED, shapeName='Destination', position=newValue)
