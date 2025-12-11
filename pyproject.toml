@@ -19,7 +19,10 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-dependencies = ['codeallybasic>=1.30.0']
+dependencies = [
+    'codeallybasic>=1.30.0',
+    'Pypubsub==4.0.3',
+]
 
 [project.urls]
 Repository = 'https://github.com/hasii2011/py-orthogonal-routing'
