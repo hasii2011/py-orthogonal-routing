@@ -15,11 +15,11 @@ workflows:
 jobs:
   build:
     docker:
-      - image: cimg/python:3.12
+      - image: cimg/python:3.13
     executor: python/default
     steps:
-      - checkout
-      -   method: full
+      - checkout:
+          method: full
       - run:
           name: Install dependencies from pyproject.toml
           command: |
