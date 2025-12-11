@@ -1,24 +1,18 @@
 
+from typing import cast
+
 from logging import Logger
 from logging import getLogger
-from typing import cast
 
 from pyorthogonalrouting.ConnectorPoint import ConnectorPoint
 from pyorthogonalrouting.OrthogonalConnectorOptions import OrthogonalConnectorOptions
 from pyorthogonalrouting.Rect import Rect
 from pyorthogonalrouting.enumerations.Side import Side
-from tests.demo.DemoEvents import ConnectionPositionChangedEvent
-from tests.demo.DemoEvents import ConnectionSideChangedEvent
-
-from tests.demo.DemoEvents import DemoEventType
-from tests.demo.DemoEvents import EVT_CONNECTION_POSITION_CHANGED
-from tests.demo.DemoEvents import EVT_CONNECTION_SIDE_CHANGED
-from tests.demo.DemoEvents import EVT_SHAPE_MOVED
-from tests.demo.DemoEvents import ShapeMovedEvent
+from tests.demo.pubsubengine.IOrthoPubSubEngine import IOrthoPubSubEngine
+from tests.demo.pubsubengine.OrthoMessageType import OrthoMessageType
 
 from tests.demo.shapes.DemoShape import DemoShape
 
-from tests.demo.IEventEngine import IEventEngine
 
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
 from tests.demo.shapes.SelectorSide import SelectorSide
@@ -29,21 +23,21 @@ class DiagramChangedHandler:
 
         self.logger: Logger = getLogger(__name__)
 
-        self._eventEngine:                IEventEngine               = cast(IEventEngine, None)
+        self._pubSub:                     IOrthoPubSubEngine         = cast(IOrthoPubSubEngine, None)
         self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = cast(OrthogonalConnectorAdapter, None)
 
     @property
-    def eventEngine(self):
+    def pubSubEngine(self):
         raise AttributeError("Cannot access write-only attribute")
 
-    @eventEngine.setter
-    def eventEngine(self, eventEngine: IEventEngine):
-        assert self._eventEngine is None, 'You should only set the event engine once'
-        self._eventEngine = eventEngine
+    @pubSubEngine.setter
+    def pubSubEngine(self, pubSubEngine: IOrthoPubSubEngine):
+        assert self._pubSub is None, 'You should only set the pub sub engine once'
+        self._pubSub = pubSubEngine
 
-        self._eventEngine.registerListener(EVT_SHAPE_MOVED,                 self._onShapeMoved)
-        self._eventEngine.registerListener(EVT_CONNECTION_SIDE_CHANGED,     self._onConnectionSideChanged)
-        self._eventEngine.registerListener(EVT_CONNECTION_POSITION_CHANGED, self._onConnectionPositionChanged)
+        self._pubSub.subscribe(OrthoMessageType.SHAPED_MOVED,                self._onShapeMoved)
+        self._pubSub.subscribe(OrthoMessageType.CONNECTION_SIDE_CHANGED,     self._onConnectionSideChanged)
+        self._pubSub.subscribe(OrthoMessageType.CONNECTION_POSITION_CHANGED, self._onConnectionPositionChanged)
 
     @property
     def orthogonalConnectorAdapter(self):
@@ -53,11 +47,7 @@ class DiagramChangedHandler:
     def orthogonalConnectorAdapter(self, value: OrthogonalConnectorAdapter):
         self._orthogonalConnectorAdapter = value
 
-    def _onConnectionSideChanged(self, event: ConnectionSideChangedEvent):
-
-        shape: DemoShape    = event.shape
-        which: str          = event.which
-        side:  SelectorSide = event.side
+    def _onConnectionSideChanged(self, shape: DemoShape, which: str, side: SelectorSide):
 
         self.logger.debug(f'Connection Changed - {shape=} {which=} {side=}')
 
@@ -81,12 +71,12 @@ class DiagramChangedHandler:
 
         adapter.runConnector(sourceConnectorPoint=sourceConnector, destinationConnectorPoint=destinationConnector, options=options)
 
-        self._eventEngine.sendEvent(DemoEventType.REFRESH_FRAME)
+        self._pubSub.sendMessage(OrthoMessageType.REFRESH_FRAME)
 
-    def _onConnectionPositionChanged(self, event: ConnectionPositionChangedEvent):
+    def _onConnectionPositionChanged(self, shapeName: str, position: float):
 
-        shapeName: str   = event.shapeName
-        position:  float = event.position
+        # shapeName: str   = event.shapeName
+        # position:  float = event.position
 
         self.logger.info(f'{shapeName=} {position=}')
 
@@ -105,12 +95,9 @@ class DiagramChangedHandler:
 
         adapter.runConnector(sourceConnectorPoint=sourceConnector, destinationConnectorPoint=destinationConnector, options=options)
 
-        self._eventEngine.sendEvent(DemoEventType.REFRESH_FRAME)
+        self._pubSub.sendMessage(OrthoMessageType.REFRESH_FRAME)
 
-    def _onShapeMoved(self, event: ShapeMovedEvent):
-
-        shape: DemoShape = event.shape
-        which: str       = event.which
+    def _onShapeMoved(self, shape: DemoShape, which: str):
 
         adapter: OrthogonalConnectorAdapter = self._orthogonalConnectorAdapter
         options: OrthogonalConnectorOptions = adapter.options
@@ -131,7 +118,7 @@ class DiagramChangedHandler:
 
         adapter.runConnector(sourceConnectorPoint=sourceConnector, destinationConnectorPoint=destinationConnector, options=options)
 
-        self._eventEngine.sendEvent(DemoEventType.REFRESH_FRAME)
+        self._pubSub.sendMessage(OrthoMessageType.REFRESH_FRAME)
 
     def _shapeToRect(self, shape: DemoShape) -> Rect:
 

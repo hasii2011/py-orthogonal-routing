@@ -19,9 +19,10 @@ from codeallybasic.UnitTestBase import UnitTestBase
 
 from tests.demo.DemoControlFrame import DemoControlFrame
 from tests.demo.DemoDiagramFrame import DemoDiagramFrame
-from tests.demo.DemoEventEngine import DemoEventEngine
 from tests.demo.DiagramChangedHandler import DiagramChangedHandler
 from tests.demo.OrthogonalConnectorAdapter import OrthogonalConnectorAdapter
+from tests.demo.pubsubengine.IOrthoPubSubEngine import IOrthoPubSubEngine
+from tests.demo.pubsubengine.OrthoPubSubEngine import OrthoPubSubEngine
 
 FRAME_WIDTH:  int = 1280
 FRAME_HEIGHT: int = 800
@@ -60,13 +61,13 @@ class DemoOrthogonalRouting(App):
 
         self.SetTopWindow(self._topLevelFrame)
 
-        self._eventEngine:                DemoEventEngine            = DemoEventEngine(listeningWindow=sizedPanel)
+        self._pubSub:                     IOrthoPubSubEngine         = OrthoPubSubEngine()
         self._orthogonalConnectorAdapter: OrthogonalConnectorAdapter = OrthogonalConnectorAdapter()
         self._diagramChangedHandler:      DiagramChangedHandler      = DiagramChangedHandler()
 
-        self._diagramFrame.eventEngine                         = self._eventEngine
-        self._controlFrame.eventEngine                         = self._eventEngine
-        self._diagramChangedHandler.eventEngine                = self._eventEngine
+        self._diagramFrame.pubSubEngine                         = self._pubSub
+        self._controlFrame.pubSubEngine                         = self._pubSub
+        self._diagramChangedHandler.pubSubEngine                = self._pubSub
         self._diagramChangedHandler.orthogonalConnectorAdapter = self._orthogonalConnectorAdapter
 
         self._orthogonalConnectorAdapter.runDefaultDemo()
