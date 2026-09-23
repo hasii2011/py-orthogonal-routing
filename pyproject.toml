@@ -8,6 +8,7 @@ dynamic = ["version"]
 description = 'Yet another orthogonal router'
 readme = "README.md"
 license = 'AGPL-1.0-or-later'
+license-files = ['LICENSE']
 authors = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
 keywords = ['orthogonal', 'routing', 'python', 'pyut']
@@ -20,7 +21,7 @@ classifiers = [
 ]
 
 dependencies = [
-    'codeallybasic>=1.40.1',
+    'codeallybasic>=1.40.0',
 ]
 
 [project.urls]
