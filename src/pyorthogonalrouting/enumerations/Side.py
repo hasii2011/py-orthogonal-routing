@@ -1,8 +1,8 @@
 
-from enum import Enum
+from enum import StrEnum
 
 
-class Side(Enum):
+class Side(StrEnum):
 
     TOP     = 'Top'
     RIGHT   = 'Right'
