@@ -7,11 +7,11 @@ name='pyorthogonalrouting'
 dynamic = ["version"]
 description = 'Yet another orthogonal router'
 readme = "README.md"
-license = 'AGPL-1.0-or-later'
-license-files = ['LICENSE']
 authors = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
 keywords = ['orthogonal', 'routing', 'python', 'pyut']
+license = 'AGPL-1.0-or-later'
+license-files = ['LICENSE']
 
 classifiers = [
   "Programming Language :: Python",
@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 dependencies = [
-    'codeallybasic>=1.40.0',
+    'codeallybasic>=1.41.0',
 ]
 
 [project.urls]
@@ -29,7 +29,7 @@ Repository = 'https://github.com/hasii2011/py-orthogonal-routing'
 
 [project.optional-dependencies]
 test = [
-    'mypy==1.20.0',
+    'mypy==2.4.0',
     'html-testRunner~=1.2.1',
 ]
 
